@@ -55,7 +55,7 @@ class Habit {
       return streak;
     }
 
-    if (occurrenceNum.contains('Daily')) {
+    if (occurrenceType.contains('Daily')) {
       DateTime currentDate = DateTime.now();
       // calculate the streak as the number of reoccurring dates without a day in between
       for (int i = completedDates.length - 1; i >= 0; i--) {

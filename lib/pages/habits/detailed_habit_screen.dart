@@ -1,10 +1,11 @@
-// detailed_habit_screen.dart
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 import 'package:share_plus/share_plus.dart';
-
+import '../../components/connect_four_game.dart';
+import '../../model/challenge.dart';
 import '../../model/habit.dart';
+import '../../websocket/websocket_client.dart';
 
 class DetailedHabitScreen extends StatefulWidget {
   Habit habit;
@@ -22,7 +23,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   String? _occurrenceType;
   int _streak = 0;
   final _occurrenceController = TextEditingController();
-
+  Challenge? _challenge;
   String _username = '';
 
   @override
@@ -34,6 +35,21 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
     _occurrenceController.text =
         widget.habit.occurrenceNum; // shows # of occurrences
     _streak = widget.habit.getStreak();
+    _loadChallenge();
+  }
+
+  Future<void> _loadChallenge() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> challenges = prefs.getStringList('challenges') ?? [];
+    for (String challengeString in challenges) {
+      Challenge challenge = Challenge.fromString(challengeString);
+      if (challenge.habitId == widget.habit.id) {
+        setState(() {
+          _challenge = challenge;
+        });
+        break;
+      }
+    }
   }
 
   Future<void> _updateHabit() async {
@@ -85,8 +101,6 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   }
 
   Future<void> _showShareDialog() async {
-    var uuid = Uuid();
-    String habitUuid = uuid.v4();
 
     return showDialog(
       context: context,
@@ -96,7 +110,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text('UUID: $habitUuid'),
+              Text('UUID: ${widget.habit.id}'),
               TextField(
                 onChanged: (value) {
                   setState(() {
@@ -110,9 +124,31 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
           actions: <Widget>[
             TextButton(
               child: Text('Share'),
-              onPressed: () {
-                // TODO: store shared habit in the backend
-                Share.share(habitUuid);
+              onPressed: () async {
+                // Create a Challenge object with an empty board
+                Challenge challenge = Challenge(
+                  habitId: widget.habit.id,
+                  habitName: widget.habit.name,
+                  habitOccurrenceType: widget.habit.occurrenceType,
+                  habitOccurrenceNum: widget.habit.occurrenceNum,
+                  board: List.generate(6, (_) => List.filled(7, 0)), // 6x7 empty board
+                  challengerID: 1,
+                );
+                _challenge = challenge;
+                log('Challenge: $challenge');
+
+                // TODO: do we want to save the challenge in the shared preferences?
+                // Save the Challenge object (this example uses SharedPreferences)
+                final prefs = await SharedPreferences.getInstance();
+                List<String> challenges = prefs.getStringList('challenges') ?? [];
+                challenges.add(challenge.toString());
+                prefs.setStringList('challenges', challenges);
+
+                // Send the challenge
+                await WebSocketClient.post('http://192.168.0.112:8080', challenge.toJson());
+
+                Share.share(widget.habit.id);
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -170,87 +206,118 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
         key: _formKey,
         child: Column(
           children: <Widget>[
-            TextFormField(
-              initialValue: _habitName,
-              decoration: InputDecoration(labelText: 'Habit Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a habit name';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _habitName = value!;
-              },
-            ),
-            DropdownButtonFormField<String>(
-              value: _occurrenceType,
-              decoration: InputDecoration(labelText: 'Occurrence'),
-              items: <String>['Daily', 'Weekly', 'Monthly']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _occurrenceType = newValue;
-                });
-              },
-            ),
-            if (_occurrenceType != 'Daily' && _occurrenceType != null)
-              TextFormField(
-                controller: _occurrenceController,
-                decoration: InputDecoration(labelText: 'Enter number of times'),
-                keyboardType: TextInputType.number,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                initialValue: _habitName,
+                decoration: InputDecoration(labelText: 'Habit Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a number';
+                    return 'Please enter a habit name';
                   }
                   return null;
                 },
+                onSaved: (value) {
+                  _habitName = value!;
+                },
               ),
-            ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  // update the habit
-                  await _updateHabit();
-                  // TODO: do not close the screen
-                  Navigator.pop(context, 'updated');
-                }
-              },
-              child: Text('Update Habit'),
             ),
-            Text('Streak: $_streak'),
-            if (!isCurrentDateCompleted)
-              Dismissible(
-                key: Key('SwipeKey'),
-                direction: DismissDirection.horizontal,
-                onDismissed: (direction) {
-                  // TODO: include some checks to prevent multiple swipes
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButtonFormField<String>(
+                value: _occurrenceType,
+                decoration: InputDecoration(labelText: 'Occurrence'),
+                items: <String>['Daily', 'Weekly', 'Monthly']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
                   setState(() {
-                    _completeHabit();
+                    _occurrenceType = newValue;
                   });
                 },
-                child: Container(
-                  width: double.infinity,
-                  height: 50,
-                  color: Colors.blue,
-                  child: Center(
-                      child: Text('Swipe to increase streak',
-                          style: TextStyle(color: Colors.white))),
+              ),
+            ),
+            if (_occurrenceType != 'Daily' && _occurrenceType != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _occurrenceController,
+                  decoration: InputDecoration(labelText: 'Enter number of times'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a number';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    // update the habit
+                    await _updateHabit();
+                    // TODO: do not close the screen
+                    Navigator.pop(context, 'updated');
+                  }
+                },
+                child: Text('Update Habit'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Streak: $_streak'),
+            ),
+            // Connect Four board
+            if (_challenge != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ConnectFourGame(
+                  challenge: _challenge,
+                  isCurrentDateCompleted: isCurrentDateCompleted,
+                ),
+              ),
+            // Swipe to complete the habit widget
+            if (!isCurrentDateCompleted)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Dismissible(
+                  key: Key('SwipeKey'),
+                  direction: DismissDirection.horizontal,
+                  onDismissed: (direction) {
+                    // TODO: include some checks to prevent multiple swipes
+                    setState(() {
+                      _completeHabit();
+                    });
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 50,
+                    color: Colors.blue,
+                    child: Center(
+                        child: Text('Swipe to increase streak',
+                            style: TextStyle(color: Colors.white))),
+                  ),
                 ),
               )
             else
-              Container(
-                width: double.infinity,
-                height: 50,
-                color: Colors.grey,
-                child: Center(
-                    child: Text('You already completed your challenge today!',
-                        style: TextStyle(color: Colors.white))),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  color: Colors.grey,
+                  child: Center(
+                      child: Text('You already completed your challenge today!',
+                          style: TextStyle(color: Colors.white))),
+                ),
               ),
           ],
         ),
