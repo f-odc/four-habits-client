@@ -1,5 +1,4 @@
 // create_habit_screen.dart
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +7,8 @@ import 'package:uuid/uuid.dart';
 import '../../model/habit.dart';
 
 class CreateHabitScreen extends StatefulWidget {
+  const CreateHabitScreen({super.key});
+
   @override
   _CreateHabitScreenState createState() => _CreateHabitScreenState();
 }
@@ -25,7 +26,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
 
     // Create a new Habit object
     Habit habit = Habit(
-      id: Uuid().v4().toString(),
+      id: const Uuid().v4().toString(),
       name: _habitName,
       occurrenceType: _occurrenceType!,
       occurrenceNum: _occurrenceController.text, // shows # of occurrences
@@ -44,14 +45,14 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Habit'),
+        title: const Text('Create Habit'),
       ),
       body: Form(
         key: _formKey,
         child: Column(
           children: <Widget>[
             TextFormField(
-              decoration: InputDecoration(labelText: 'Habit Name'),
+              decoration: const InputDecoration(labelText: 'Habit Name'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a habit name';
@@ -64,7 +65,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
             ),
             DropdownButtonFormField<String>(
               value: _occurrenceType,
-              decoration: InputDecoration(labelText: 'Occurrence'),
+              decoration: const InputDecoration(labelText: 'Occurrence'),
               items: <String>['Daily', 'Weekly', 'Monthly']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -81,7 +82,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
             if (_occurrenceType != 'Daily' && _occurrenceType != null)
               TextFormField(
                 controller: _occurrenceController,
-                decoration: InputDecoration(labelText: 'Enter number of times'),
+                decoration: const InputDecoration(labelText: 'Enter number of times'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -99,7 +100,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                   Navigator.pop(context, 'saved');
                 }
               },
-              child: Text('Save Habit'),
+              child: const Text('Save Habit'),
             ),
           ],
         ),

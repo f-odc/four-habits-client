@@ -1,5 +1,4 @@
 // new.dart
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +7,8 @@ import 'create_habit_screen.dart';
 import 'detailed_habit_screen.dart';
 
 class HabitScreen extends StatefulWidget {
+  const HabitScreen({super.key});
+
   @override
   _HabitScreenState createState() => _HabitScreenState();
 }
@@ -38,7 +39,7 @@ class _HabitScreenState extends State<HabitScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Habit'),
+        title: const Text('Create New Habit'),
       ),
       body: ListView.builder(
         itemCount: _habits.length,
@@ -60,7 +61,7 @@ class _HabitScreenState extends State<HabitScreen> {
             },
             child: Card(
               child: ListTile(
-                leading: Icon(Icons.check_circle_outline),
+                leading: const Icon(Icons.check_circle_outline),
                 title: Text('Habit: ${_habits[index].name}'),
                 subtitle: Text(_habits[index].occurrenceType == 'Daily'
                     ? 'Occurrence: ${_habits[index].occurrenceType}'
@@ -75,7 +76,7 @@ class _HabitScreenState extends State<HabitScreen> {
                         fontSize: 20.0,
                       ),
                     ),
-                    Icon(Icons.local_fire_department), // flame icon
+                    const Icon(Icons.local_fire_department), // flame icon
                   ],
                 ),
               ),
@@ -88,14 +89,14 @@ class _HabitScreenState extends State<HabitScreen> {
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreateHabitScreen()),
+            MaterialPageRoute(builder: (context) => const CreateHabitScreen()),
           );
           if (result == 'saved') {
             _loadHabit();
           }
         },
-        child: Icon(Icons.add),
         tooltip: 'Add Habit',
+        child: const Icon(Icons.add),
       ),
     );
   }

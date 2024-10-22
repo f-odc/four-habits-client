@@ -6,7 +6,7 @@ class EditHabitScreen extends StatefulWidget {
   final String habit;
   final int index;
 
-  EditHabitScreen({required this.habit, required this.index});
+  const EditHabitScreen({super.key, required this.habit, required this.index});
 
   @override
   _EditHabitScreenState createState() => _EditHabitScreenState();
@@ -46,7 +46,7 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Habit'),
+        title: const Text('Edit Habit'),
       ),
       body: Form(
         key: _formKey,
@@ -54,7 +54,7 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
           children: <Widget>[
             TextFormField(
               initialValue: _habitName,
-              decoration: InputDecoration(labelText: 'Habit Name'),
+              decoration: const InputDecoration(labelText: 'Habit Name'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a habit name';
@@ -67,7 +67,7 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
             ),
             DropdownButtonFormField<String>(
               value: _occurrence,
-              decoration: InputDecoration(labelText: 'Occurrence'),
+              decoration: const InputDecoration(labelText: 'Occurrence'),
               items: <String>['Daily', 'x times a week', 'x times a month']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -84,7 +84,7 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
             if (_occurrence != 'Daily' && _occurrence != null)
               TextFormField(
                 controller: _occurrenceController,
-                decoration: InputDecoration(labelText: 'Enter number of times'),
+                decoration: const InputDecoration(labelText: 'Enter number of times'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -106,7 +106,7 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
                   Navigator.pop(context, 'updated');
                 }
               },
-              child: Text('Update Habit'),
+              child: const Text('Update Habit'),
             ),
           ],
         ),

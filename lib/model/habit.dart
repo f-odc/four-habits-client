@@ -6,6 +6,7 @@ class Habit {
   String occurrenceType;
   String occurrenceNum;
   List<DateTime> completedDates;
+  int highestStreak = 0;
 
   Habit({
     required this.id,
@@ -13,9 +14,11 @@ class Habit {
     required this.occurrenceType,
     required this.occurrenceNum,
     required this.completedDates,
+    highestStreak,
   });
 
   // Convert a Habit object into a String.
+  @override
   String toString() {
     Map<String, dynamic> map = {
       'id': id,
@@ -24,6 +27,7 @@ class Habit {
       'occurrenceType': occurrenceType,
       'completedDates':
           completedDates.map((date) => date.toIso8601String()).toList(),
+      'highestStreak': highestStreak,
     };
     return jsonEncode(map);
   }
@@ -40,6 +44,7 @@ class Habit {
       occurrenceNum: map['occurrence'],
       occurrenceType: map['occurrenceType'],
       completedDates: completedDates,
+      highestStreak: map['highestStreak'],
     );
   }
 
@@ -50,29 +55,67 @@ class Habit {
 
   int getStreak() {
     int streak = 0;
+    DateTime now = DateTime.now();
 
-    if (completedDates.isEmpty) {
-      return streak;
+    if (occurrenceType == 'Daily') {
+      streak = _calculateDailyStreak(now);
+    } else if (occurrenceType == 'Weekly') {
+      streak = _calculateWeeklyStreak(now, int.parse(occurrenceNum));
+    } else if (occurrenceType == 'Monthly') {
+      streak = _calculateMonthlyStreak(now, int.parse(occurrenceNum));
     }
 
-    if (occurrenceType.contains('Daily')) {
-      DateTime currentDate = DateTime.now();
-      // calculate the streak as the number of reoccurring dates without a day in between
-      for (int i = completedDates.length - 1; i >= 0; i--) {
-        if (currentDate.difference(completedDates[i]).inDays > 1) {
-          // if the last date is over the allowed time difference, the streak is 0
-          if (i == completedDates.length - 1) {
-            return 0;
-          }
-          break;
-        }
-        streak++;
-      }
-      return streak;
+    if (streak > highestStreak) {
+      highestStreak = streak;
     }
+    return streak;
+  }
 
-    // TODO: implement streak calculation for weekly and monthly habits
+  int _calculateDailyStreak(DateTime now) {
+    int streak = 0;
+    DateTime currentDate = now;
+
+    while (completedDates.any((date) =>
+    date.year == currentDate.year &&
+        date.month == currentDate.month &&
+        date.day == currentDate.day)) {
+      streak++;
+      currentDate = currentDate.subtract(const Duration(days: 1));
+    }
 
     return streak;
+  }
+
+  int _calculateWeeklyStreak(DateTime now, int timesPerWeek) {
+    int streak = 0;
+    DateTime startOfWeek = now.subtract(const Duration(days: 7));
+    DateTime endOfWeek = now;
+
+
+    while (_countCompletedDatesInRange(startOfWeek, endOfWeek) >= timesPerWeek) {
+      streak++;
+      startOfWeek = startOfWeek.subtract(const Duration(days: 7));
+      endOfWeek = endOfWeek.subtract(const Duration(days: 7));
+    }
+
+    return streak;
+  }
+
+  int _calculateMonthlyStreak(DateTime now, int timesPerMonth) {
+    int streak = 0;
+    DateTime startOfMonth = now.subtract(const Duration(days: 30));
+    DateTime endOfMonth = now;
+
+    while (_countCompletedDatesInRange(startOfMonth, endOfMonth) >= timesPerMonth) {
+      streak++;
+      startOfMonth = startOfMonth.subtract(const Duration(days: 30));
+      endOfMonth = endOfMonth.subtract(const Duration(days: 30));
+    }
+
+    return streak;
+  }
+
+  int _countCompletedDatesInRange(DateTime start, DateTime end) {
+    return completedDates.where((date) => date.isAfter(start.subtract(const Duration(days: 1))) && date.isBefore(end.add(const Duration(days: 1)))).length;
   }
 }

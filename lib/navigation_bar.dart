@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 
 import 'pages/home_page.dart';
-import 'messages_page.dart';
 import 'pages/habits/habit_screen.dart';
 import 'pages/notification_page.dart';
 
@@ -62,13 +61,13 @@ class _NavigationExampleState extends State<NavigationExample> {
       ),
       body: <Widget>[
         /// Home page
-        HomePage(),
+        const HomePage(),
 
         /// Notifications page
-        NotificationsPage(),
+        const NotificationsPage(),
 
         /// NewHabitScreen
-        HabitScreen(),
+        const HabitScreen(),
       ][currentPageIndex],
     );
   }

@@ -5,13 +5,14 @@ import 'package:share_plus/share_plus.dart';
 import '../../components/connect_four_game.dart';
 import '../../model/challenge.dart';
 import '../../model/habit.dart';
+import '../../model/move.dart';
 import '../../websocket/websocket_client.dart';
 
 class DetailedHabitScreen extends StatefulWidget {
   Habit habit;
   final int index;
 
-  DetailedHabitScreen({required this.habit, required this.index});
+  DetailedHabitScreen({super.key, required this.habit, required this.index});
 
   @override
   _DetailedHabitScreenState createState() => _DetailedHabitScreenState();
@@ -24,6 +25,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   int _streak = 0;
   final _occurrenceController = TextEditingController();
   Challenge? _challenge;
+  Move? _challengeMove;
   String _username = '';
 
   @override
@@ -38,6 +40,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
     _loadChallenge();
   }
 
+  // load challenge from the webserver
   Future<void> _loadChallenge() async {
     final prefs = await SharedPreferences.getInstance();
     List<String> challenges = prefs.getStringList('challenges') ?? [];
@@ -50,6 +53,17 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
         break;
       }
     }
+    // load challenge move from shared preferences
+    List<String> moves = prefs.getStringList('moves') ?? [];
+    for (String moveString in moves) {
+      Move move = Move.fromString(moveString);
+      if (move.challengeID == widget.habit.id) {
+        setState(() {
+          _challengeMove = move;
+        });
+        break;
+      }
+    }
   }
 
   Future<void> _updateHabit() async {
@@ -58,7 +72,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
 
     // Update habit fields
     widget.habit.name = _habitName;
-    widget.habit.occurrenceNum = _occurrenceController.text!;
+    widget.habit.occurrenceNum = _occurrenceController.text;
     widget.habit.occurrenceType = _occurrenceType!;
 
     // Convert the Habit object to a String
@@ -67,12 +81,42 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
     // Update the Habit string in the list and save it in SharedPreferences
     habits[widget.index] = habitString;
     prefs.setStringList('habits', habits);
+
+    // TODO: update challenge if it exists
   }
 
   Future<void> _completeHabit() async {
     // Add the current date to the habit's completedDates
     widget.habit.addCurrentDate();
+    int oldStreak = _streak;
     _streak = widget.habit.getStreak();
+
+    // TODO: allow a move only if the streak is increased or every time?
+    // check if the streak has increased
+    if (_streak > oldStreak) {
+      if (_challengeMove != null) {
+        // allow a move.dart in the Connect Four game
+        _challengeMove!.allowMove();
+        // TODO: test
+        // TODO: store the move in the shared preferences
+        final prefs = await SharedPreferences.getInstance();
+        List<String> moves = prefs.getStringList('moves') ?? [];
+        // Find the index of the move to update
+        int moveIndex = moves.indexWhere((moveString) {
+          Move move = Move.fromString(moveString);
+          return move.challengeID == _challengeMove!.challengeID;
+        });
+
+        if (moveIndex != -1) {
+          // Update the move
+          moves[moveIndex] = _challengeMove!.toString();
+          // Save the updated list back to SharedPreferences
+          prefs.setStringList('moves', moves);
+        }
+      }
+
+    }
+
 
     // Update the habit in SharedPreferences
     await _updateHabit();
@@ -100,13 +144,52 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
     return false;
   }
 
+  // Create and upload challenge
+  Future<void> _createChallenge() async {
+    // Create a Challenge object with an empty board
+    Challenge challenge = Challenge(
+      habitId: widget.habit.id,
+      habitName: widget.habit.name,
+      habitOccurrenceType: widget.habit.occurrenceType,
+      habitOccurrenceNum: widget.habit.occurrenceNum,
+      board: List.generate(6, (_) => List.filled(7, 0)),
+      // 6x7 empty board
+      challengerID: 1,
+    );
+    _challenge = challenge;
+    log('Challenge: $challenge');
+
+    // create challenge move
+    await _createMove(challenge.habitId);
+
+    // TODO: do we want to save the challenge in the shared preferences?
+    // Save the Challenge object (this example uses SharedPreferences)
+    final prefs = await SharedPreferences.getInstance();
+    List<String> challenges = prefs.getStringList('challenges') ?? [];
+    challenges.add(challenge.toString());
+    prefs.setStringList('challenges', challenges);
+
+    // Send the challenge
+    await WebSocketClient.post(challenge.toJson());
+  }
+
+  /// Create a move class to monitor the possibility of a move
+  Future<void> _createMove(String challengeID) async{
+    Move challengeMove = Move(challengeID: challengeID);
+    // store move in shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    List<String> moves = prefs.getStringList('moves') ?? [];
+    moves.add(challengeMove.toString());
+    prefs.setStringList('moves', moves);
+  }
+
   Future<void> _showShareDialog() async {
 
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Share Habit'),
+          title: const Text('Share Habit'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -117,36 +200,15 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                     _username = value;
                   });
                 },
-                decoration: InputDecoration(labelText: 'Enter your Playername'),
+                decoration: const InputDecoration(labelText: 'Enter your Playername'),
               ),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Share'),
+              child: const Text('Share'),
               onPressed: () async {
-                // Create a Challenge object with an empty board
-                Challenge challenge = Challenge(
-                  habitId: widget.habit.id,
-                  habitName: widget.habit.name,
-                  habitOccurrenceType: widget.habit.occurrenceType,
-                  habitOccurrenceNum: widget.habit.occurrenceNum,
-                  board: List.generate(6, (_) => List.filled(7, 0)), // 6x7 empty board
-                  challengerID: 1,
-                );
-                _challenge = challenge;
-                log('Challenge: $challenge');
-
-                // TODO: do we want to save the challenge in the shared preferences?
-                // Save the Challenge object (this example uses SharedPreferences)
-                final prefs = await SharedPreferences.getInstance();
-                List<String> challenges = prefs.getStringList('challenges') ?? [];
-                challenges.add(challenge.toString());
-                prefs.setStringList('challenges', challenges);
-
-                // Send the challenge
-                await WebSocketClient.post('http://192.168.0.112:8080', challenge.toJson());
-
+                _createChallenge();
                 Share.share(widget.habit.id);
                 Navigator.of(context).pop();
               },
@@ -159,31 +221,32 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: work on this logic
     bool isCurrentDateCompleted =
         isCurrentDateInList(widget.habit.completedDates);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detailed Habit'),
+        title: const Text('Detailed Habit'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Delete Habit'),
+                    title: const Text('Delete Habit'),
                     content:
-                        Text('Are you sure you want to delete this habit?'),
+                        const Text('Are you sure you want to delete this habit?'),
                     actions: <Widget>[
                       TextButton(
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                       ),
                       TextButton(
-                        child: Text('Delete'),
+                        child: const Text('Delete'),
                         onPressed: () async {
                           await _deleteHabit();
                           Navigator.of(context).pop();
@@ -197,7 +260,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.share),
+            icon: const Icon(Icons.share),
             onPressed: _showShareDialog,
           ),
         ],
@@ -210,7 +273,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 initialValue: _habitName,
-                decoration: InputDecoration(labelText: 'Habit Name'),
+                decoration: const InputDecoration(labelText: 'Habit Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a habit name';
@@ -226,7 +289,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
               padding: const EdgeInsets.all(8.0),
               child: DropdownButtonFormField<String>(
                 value: _occurrenceType,
-                decoration: InputDecoration(labelText: 'Occurrence'),
+                decoration: const InputDecoration(labelText: 'Occurrence'),
                 items: <String>['Daily', 'Weekly', 'Monthly']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
@@ -246,7 +309,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   controller: _occurrenceController,
-                  decoration: InputDecoration(labelText: 'Enter number of times'),
+                  decoration: const InputDecoration(labelText: 'Enter number of times'),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -268,20 +331,20 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                     Navigator.pop(context, 'updated');
                   }
                 },
-                child: Text('Update Habit'),
+                child: const Text('Update Habit'),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text('Streak: $_streak'),
             ),
-            // Connect Four board
+            // Connect Four board -> if a challenge exists
             if (_challenge != null)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ConnectFourGame(
                   challenge: _challenge,
-                  isCurrentDateCompleted: isCurrentDateCompleted,
+                  challengeMove: _challengeMove ?? Move(challengeID: _challenge!.habitId),
                 ),
               ),
             // Swipe to complete the habit widget
@@ -289,7 +352,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Dismissible(
-                  key: Key('SwipeKey'),
+                  key: const Key('SwipeKey'),
                   direction: DismissDirection.horizontal,
                   onDismissed: (direction) {
                     // TODO: include some checks to prevent multiple swipes
@@ -301,7 +364,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                     width: double.infinity,
                     height: 50,
                     color: Colors.blue,
-                    child: Center(
+                    child: const Center(
                         child: Text('Swipe to increase streak',
                             style: TextStyle(color: Colors.white))),
                   ),
@@ -314,7 +377,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                   width: double.infinity,
                   height: 50,
                   color: Colors.grey,
-                  child: Center(
+                  child: const Center(
                       child: Text('You already completed your challenge today!',
                           style: TextStyle(color: Colors.white))),
                 ),

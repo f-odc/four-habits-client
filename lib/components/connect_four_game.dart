@@ -2,12 +2,14 @@
 import 'package:flutter/material.dart';
 import '../../model/challenge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../model/move.dart';
+import '../websocket/websocket_client.dart';
 
 class ConnectFourGame extends StatefulWidget {
   final Challenge? challenge;
-  final bool isCurrentDateCompleted;
+  final Move? challengeMove;
 
-  ConnectFourGame({required this.challenge, required this.isCurrentDateCompleted});
+  const ConnectFourGame({super.key, required this.challenge, required this.challengeMove});
 
   @override
   _ConnectFourGameState createState() => _ConnectFourGameState();
@@ -15,16 +17,18 @@ class ConnectFourGame extends StatefulWidget {
 
 class _ConnectFourGameState extends State<ConnectFourGame> {
   late Challenge _challenge;
+  late Move _challengeMove;
 
   @override
   void initState() {
     super.initState();
     _challenge = widget.challenge!;
+    _challengeMove = widget.challengeMove!;
   }
 
-  void _handleMove(int column) {
+  void _handleMove(int column) async {
     // don't allow moves if the challenge is already completed
-    if (widget.isCurrentDateCompleted) return;
+    if (!widget.challengeMove!.isMovePossible()) return;
 
     var board = _challenge.board;
     var currentPlayer = _challenge.challengerID;
@@ -47,6 +51,14 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
         break;
       }
     }
+
+    // Update the challenge
+    await WebSocketClient.post(_challenge.toJson());
+
+    // do no allow another move
+    setState(() {
+      widget.challengeMove!.resetMovePossibility();
+    });
   }
 
   Future<void> _saveGameState() async {
@@ -64,6 +76,23 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
       challenges[index] = _challenge.toString();
       // Save the updated list back to SharedPreferences
       prefs.setStringList('challenges', challenges);
+    }
+
+    // Handle the move
+    _challengeMove.resetMovePossibility();
+    List<String> moves = prefs.getStringList('moves') ?? [];
+
+    // Find the index of the move to update
+    int moveIndex = moves.indexWhere((moveString) {
+      Move move = Move.fromString(moveString);
+      return move.challengeID == _challengeMove.challengeID;
+    });
+
+    if (moveIndex != -1) {
+      // Update the move
+      moves[moveIndex] = _challengeMove.toString();
+      // Save the updated list back to SharedPreferences
+      prefs.setStringList('moves', moves);
     }
   }
 
@@ -117,7 +146,7 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
             ),
           ],
         ),
-        if (widget.isCurrentDateCompleted)
+        if (!widget.challengeMove!.isMovePossible())
         Positioned.fill(
           child: Container(
             color: Colors.grey.withOpacity(0.7),

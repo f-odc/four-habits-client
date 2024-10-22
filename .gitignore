@@ -1,0 +1,14 @@
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+
+.dart_tool/
+build/
+pubspec.lock
+
+.flutter-plugins
+.flutter-plugins-dependencies
+analysis_options.yaml
+four_habits_client.iml

@@ -1,14 +1,16 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class WebSocketClient {
-  final String url;
+  static String url = 'http://192.168.0.112:8080';
+  static String token = '187';
 
-  WebSocketClient({required this.url});
+  WebSocketClient();
 
-  static Future<void> post(String url, Map<String, dynamic> data) async {
+  // TODO: use json request
+  static Future<void> post(Map<String, dynamic> data) async {
     var request = http.MultipartRequest('POST', Uri.parse(url))
+      ..headers['Authorization'] = 'Bearer $token'
       ..fields['id'] = data['id']
       ..fields['name'] = data['name']
       ..fields['occurrence'] = data['occurrence']
@@ -26,8 +28,11 @@ class WebSocketClient {
     }
   }
 
-  static Future<void> get(String url, String message) async {
-    final response = await http.get(Uri.parse('$url?message=$message'));
+  static Future<void> get(String message) async {
+    final response = await http.get(
+      Uri.parse('$url?message=$message'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
     if (response.statusCode == 200) {
       print('Response: ${response.body}');
     } else {

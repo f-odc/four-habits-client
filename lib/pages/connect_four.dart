@@ -5,6 +5,8 @@ import 'dart:convert';
 import '../NotificationService.dart';
 
 class ConnectFour extends StatefulWidget {
+  const ConnectFour({super.key});
+
   @override
   _ConnectFourState createState() => _ConnectFourState();
 }
@@ -108,8 +110,8 @@ class _ConnectFourState extends State<ConnectFour> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _resetGame,
-        child: Icon(Icons.refresh),
         tooltip: 'Reset Game',
+        child: const Icon(Icons.refresh),
       ),
     );
   }
