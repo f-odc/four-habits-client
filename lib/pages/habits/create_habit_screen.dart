@@ -1,10 +1,5 @@
-// create_habit_screen.dart
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
-
-import '../../model/habit.dart';
+import 'create_habit_logic.dart';
 
 class CreateHabitScreen extends StatefulWidget {
   const CreateHabitScreen({super.key});
@@ -18,28 +13,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
   String _habitName = '';
   String? _occurrenceType;
   final _occurrenceController = TextEditingController();
-
-  // Use shared preferences to save the habit
-  Future<void> _saveHabit() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> habits = prefs.getStringList('habits') ?? [];
-
-    // Create a new Habit object
-    Habit habit = Habit(
-      id: const Uuid().v4().toString(),
-      name: _habitName,
-      occurrenceType: _occurrenceType!,
-      occurrenceNum: _occurrenceController.text, // shows # of occurrences
-      completedDates: [],
-    );
-
-    // Convert the Habit object to a String
-    String habitString = habit.toString();
-
-    // Add the Habit string to the list and save it in SharedPreferences
-    habits.add(habitString);
-    prefs.setStringList('habits', habits);
-  }
+  final CreateHabitLogic _logic = CreateHabitLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +70,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                   // save the habit
-                  await _saveHabit();
+                  await _logic.saveHabit(_habitName, _occurrenceType!, _occurrenceController.text);
                   Navigator.pop(context, 'saved');
                 }
               },
