@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/shared_preferences_service.dart';
 import 'habit_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -10,6 +10,7 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  final prefs = SharedPreferencesService();
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
 
@@ -62,9 +63,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       icon: const Icon(Icons.arrow_forward, color: Colors.orange),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString('username', _usernameController.text);
-                          await prefs.setBool('firstVisit', false);
+                          await prefs.setUsername(_usernameController.text);
+                          await prefs.setFirstVisit(false);
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => const HabitScreen()),

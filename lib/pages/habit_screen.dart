@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../model/habit.dart';
+import '../services/shared_preferences_service.dart';
 import 'habits/create_habit_screen.dart';
 import 'habits/detailed_habit_screen.dart';
 
@@ -14,6 +14,7 @@ class HabitScreen extends StatefulWidget {
 class _HabitScreenState extends State<HabitScreen> {
   List<Habit> _habits = [];
   String _username = '';
+  final pref = SharedPreferencesService();
 
   @override
   void initState() {
@@ -23,8 +24,7 @@ class _HabitScreenState extends State<HabitScreen> {
   }
 
   Future<void> _loadHabit() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> habitStrings = prefs.getStringList('habits') ?? [];
+    List<String> habitStrings = pref.getHabits() ?? [];
 
     setState(() {
       _habits = habitStrings.map((habitString) {
@@ -34,9 +34,8 @@ class _HabitScreenState extends State<HabitScreen> {
   }
 
   Future<void> _loadUsername() async {
-    final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _username = prefs.getString('username') ?? 'User';
+      _username = pref.getUsername() ?? 'User';
     });
   }
 
