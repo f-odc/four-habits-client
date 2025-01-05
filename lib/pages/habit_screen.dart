@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../model/habit.dart';
-import 'create_habit_screen.dart';
-import 'detailed_habit_screen.dart';
+import '../model/habit.dart';
+import 'habits/create_habit_screen.dart';
+import 'habits/detailed_habit_screen.dart';
 
 class HabitScreen extends StatefulWidget {
   const HabitScreen({super.key});
