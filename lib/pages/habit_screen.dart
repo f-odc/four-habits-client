@@ -52,12 +52,12 @@ class _HabitScreenState extends State<HabitScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    'Welcome $_username',
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
-                    ),
+                  'Welcome $_username',
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
                 ),
                 const Text(
                   '“Great habits are the foundation of great achievements.”',
@@ -66,95 +66,112 @@ class _HabitScreenState extends State<HabitScreen> {
                     fontStyle: FontStyle.italic,
                     color: Colors.orange,
                   ),
-
                 ),
               ],
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _habits.length,
+              itemCount: _habits.length + 1, // Add one for the "Create New Habit" card
               itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailedHabitScreen(
-                          habit: _habits[index],
-                          index: index,
-                        ),
-                      ),
-                    );
-                    _loadHabit();
-                  },
-                  child: Padding (
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.check_circle_outline),
-                      title: Text(
-                          'Habit: ${_habits[index].name}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
+                if (index == 0) {
+                  // Create New Habit card
+                  return GestureDetector(
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CreateHabitScreen()),
+                      );
+                      if (result == 'saved') {
+                        _loadHabit();
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: Card(
+                        color: Colors.orange[100],
+                        child: ListTile(
+                          leading: const Icon(Icons.add, color: Colors.orange),
+                          title: const Text(
+                            'Create New Habit',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                              color: Colors.orange,
+                            ),
                           ),
-                      ),
-                      subtitle: Text(
-                        _habits[index].occurrenceType == 'Daily'
-                          ? 'Occurrence: ${_habits[index].occurrenceType}'
-                          : 'Occurrence: ${_habits[index].occurrenceType} - ${_habits[index].occurrenceNum}',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.grey[600],
                         ),
                       ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                            _habits[index].getStreak().toString(),
+                    ),
+                  );
+                } else if (index == 1) {
+                  // Divider
+                  return const Divider(
+                  thickness: 2.0,
+                  indent: 16.0,
+                  endIndent: 16.0,
+                  );
+                }
+                else {
+                  // Habit cards
+                  final habit = _habits[index - 1];
+                  return GestureDetector(
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailedHabitScreen(
+                            habit: habit,
+                            index: index - 1,
+                          ),
+                        ),
+                      );
+                      _loadHabit();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Card(
+                        // TODO: place color only if habit is not performed today - color: Colors.orange[100],
+                        child: ListTile(
+                          leading: const Icon(Icons.check_circle_outline),
+                          title: Text(
+                            'Habit: ${habit.name}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20.0,
                             ),
                           ),
-                          const Icon(Icons.local_fire_department),
-                        ],
+                          subtitle: Text(
+                            habit.occurrenceType == 'Daily'
+                                ? 'Occurrence: ${habit.occurrenceType}'
+                                : 'Occurrence: ${habit.occurrenceType} - ${habit.occurrenceNum}',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                habit.getStreak().toString(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                              const Icon(Icons.local_fire_department, color: Colors.orange),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  ),
-                );
+                  );
+                }
               },
             ),
           ),
         ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton : Padding (
-        padding: const EdgeInsets.only(bottom: 30.0),
-      child: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CreateHabitScreen()),
-          );
-          if (result == 'saved') {
-            _loadHabit();
-          }
-        },
-        tooltip: 'Add Habit',
-        icon: const Icon(Icons.add),
-        backgroundColor: Colors.orange,
-        label: Text(
-            'Add new Habit',
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-        ),
-      ),
       ),
     );
   }
