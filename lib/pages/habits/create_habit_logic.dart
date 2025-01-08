@@ -1,11 +1,12 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../../model/habit.dart';
+import '../../services/shared_preferences_service.dart';
 
 class CreateHabitLogic {
+  final SharedPreferencesService _prefsService = SharedPreferencesService();
+
   Future<void> saveHabit(String habitName, String occurrenceType, String occurrenceNum) async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> habits = prefs.getStringList('habits') ?? [];
+    await _prefsService.init();
 
     // Create a new Habit object
     Habit habit = Habit(
@@ -16,11 +17,7 @@ class CreateHabitLogic {
       completedDates: [],
     );
 
-    // Convert the Habit object to a String
-    String habitString = habit.toString();
-
-    // Add the Habit string to the list and save it in SharedPreferences
-    habits.add(habitString);
-    prefs.setStringList('habits', habits);
+    // add habit
+    _prefsService.addHabit(habit);
   }
 }

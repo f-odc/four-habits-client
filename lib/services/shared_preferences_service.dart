@@ -1,3 +1,4 @@
+import 'package:four_habits_client/model/habit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
@@ -32,11 +33,23 @@ class SharedPreferencesService {
     return _preferences?.getString('username');
   }
 
-  // Set and get habits
+  // Set habit list
   Future<void> setHabits(List<String> value) async {
     await _preferences?.setStringList('habits', value);
   }
 
+  // Add habit to habit list
+  Future<void> addHabit(Habit habit) async {
+    // Get the current list of habits
+    List<String> habits = _preferences?.getStringList('habits') ?? [];
+    // Add the new habit to the list
+    habits.add(habit.toString());
+    // Save the updated list
+    await _preferences?.setStringList('habits', habits);
+  }
+
+  // TODO: maybe return habits
+  // get habit list
   List<String>? getHabits() {
     return _preferences?.getStringList('habits');
   }
