@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:four_habits_client/components/custom_card.dart';
+import 'package:four_habits_client/components/habit_tile.dart';
+import 'package:four_habits_client/components/custom_app_bar.dart';
+import 'package:four_habits_client/components/custom_divider.dart';
 import 'create_habit_logic.dart';
 
 class CreateHabitScreen extends StatefulWidget {
@@ -18,26 +22,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60.0),
-        child: Column(
-          children: [
-            AppBar(
-              iconTheme: const IconThemeData(color: Colors.orange), // Set back button color to orange
-              title: const Text(
-                'Create Your Habit!',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-              centerTitle: true, // Center the title
-              elevation: 0, // Add a small shadow
-            ),
-          ],
-        ),
-      ),
+      appBar: const CustomAppBar(title: "Create Your Habit!"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -46,47 +31,14 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // HABIT CARD PREVIEW
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.check_circle_outline),
-                  title: Text(
-                    'Habit: $_habitName',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  subtitle: Text(
-                    _occurrenceType == 'Daily'
-                        ? 'Occurrence: $_occurrenceType'
-                        : 'Occurrence: $_occurrenceType - ${_occurrenceController.text}',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const Text(
-                        '0',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
-                        ),
-                      ),
-                      const Icon(Icons.local_fire_department, color: Colors.orange),
-                    ],
-                  ),
-                ),
+              HabitTile(
+                habitName: _habitName,
+                occurrenceType: _occurrenceType ?? '',
+                occurrenceNum: _occurrenceController.text,
+                streak: 0,
               ),
               const SizedBox(height: 16),
-              const Divider(
-                thickness: 2.0,
-                indent: 16.0,
-                endIndent: 16.0,
-                height: 1,
-              ),
+              const CustomDivider(),
               const SizedBox(height: 16),
               const Text(
                 'Habit Name',
@@ -185,20 +137,12 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                     Navigator.pop(context, 'saved');
                   }
                 },
-                child: Card(
-                  color: Colors.orange[100],
-                  child: ListTile(
-                    leading: const Icon(Icons.save, color: Colors.orange),
-                    title: const Text(
-                      'Save Habit',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                        color: Colors.orange,
-                      ),
-                    ),
-                  ),
-                ),
+                child: CustomCard(
+                    icon: Icons.save,
+                    iconColor: Colors.orange,
+                    cardColor: Colors.orange[100],
+                    cardText: 'Save Habit',
+                    cardTextColor: Colors.orange),
               ),
             ],
           ),
