@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:four_habits_client/components/custom_card.dart';
+import 'package:four_habits_client/components/custom_divider.dart';
+import 'package:four_habits_client/components/habit_tile.dart';
 import '../model/habit.dart';
 import '../services/shared_preferences_service.dart';
 import 'habits/create_habit_screen.dart';
@@ -44,7 +47,8 @@ class _HabitScreenState extends State<HabitScreen> {
     return Scaffold(
       body: Column(
         children: [
-          const SizedBox(height: 80), // Adjust this value to move the AppBar further down
+          const SizedBox(
+              height: 80), // Adjust this value to move the AppBar further down
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -71,7 +75,8 @@ class _HabitScreenState extends State<HabitScreen> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _habits.length + 1, // Add one for the "Create New Habit" card
+              itemCount:
+                  _habits.length + 1, // Add one for the "Create New Habit" card
               itemBuilder: (context, index) {
                 if (index == 0) {
                   // Create New Habit card
@@ -79,39 +84,27 @@ class _HabitScreenState extends State<HabitScreen> {
                     onTap: () async {
                       final result = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CreateHabitScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const CreateHabitScreen()),
                       );
                       if (result == 'saved') {
                         _loadHabit();
                       }
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: Card(
-                        color: Colors.orange[100],
-                        child: ListTile(
-                          leading: const Icon(Icons.add, color: Colors.orange),
-                          title: const Text(
-                            'Create New Habit',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                              color: Colors.orange,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: CustomCard(
+                            icon: Icons.add,
+                            iconColor: Colors.orange,
+                            cardColor: Colors.orange[100],
+                            cardText: 'Create New Habit',
+                            cardTextColor: Colors.orange)),
                   );
                 } else if (index == 1) {
                   // Divider
-                  return const Divider(
-                  thickness: 2.0,
-                  indent: 16.0,
-                  endIndent: 16.0,
-                  );
-                }
-                else {
+                  return CustomDivider(height: null);
+                } else {
                   // Habit cards
                   final habit = _habits[index - 1];
                   return GestureDetector(
@@ -128,43 +121,13 @@ class _HabitScreenState extends State<HabitScreen> {
                       _loadHabit();
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Card(
-                        // TODO: place color only if habit is not performed today - color: Colors.orange[100],
-                        child: ListTile(
-                          leading: const Icon(Icons.check_circle_outline),
-                          title: Text(
-                            'Habit: ${habit.name}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                            ),
-                          ),
-                          subtitle: Text(
-                            habit.occurrenceType == 'Daily'
-                                ? 'Occurrence: ${habit.occurrenceType}'
-                                : 'Occurrence: ${habit.occurrenceType} - ${habit.occurrenceNum}',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text(
-                                habit.getStreak().toString(),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20.0,
-                                ),
-                              ),
-                              const Icon(Icons.local_fire_department, color: Colors.orange),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        // HABIT TILE
+                        child: HabitTile(
+                            habitName: habit.name,
+                            occurrenceType: habit.occurrenceType,
+                            occurrenceNum: habit.occurrenceNum,
+                            streak: habit.getStreak())),
                   );
                 }
               },

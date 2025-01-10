@@ -38,7 +38,9 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                 streak: 0,
               ),
               const SizedBox(height: 16),
-              const CustomDivider(),
+              const CustomDivider(
+                height: 1,
+              ),
               const SizedBox(height: 16),
               const Text(
                 'Habit Name',
@@ -133,7 +135,8 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     // save the habit
-                    await _logic.saveHabit(_habitName, _occurrenceType!, _occurrenceController.text);
+                    await _logic.saveHabit(_habitName, _occurrenceType!,
+                        _occurrenceController.text);
                     Navigator.pop(context, 'saved');
                   }
                 },
