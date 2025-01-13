@@ -6,3 +6,9 @@
 ## Used Packages
 - [flutter_launcher_icons](https://pub.dev/packages/flutter_launcher_icons)
 - [flutter_native_splash](https://pub.dev/packages/flutter_native_splash)
+
+## Developer Notes
+Run before commit:
+```flutter analyze --no-pub```
+```flutter test```
+```dart fix --dry-run```
