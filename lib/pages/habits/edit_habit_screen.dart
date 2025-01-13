@@ -53,7 +53,7 @@ class _EditHabitScreen extends State<EditHabitScreen> {
               // HABIT CARD PREVIEW
               HabitTile(
                 habitName: _habitNameController.text,
-                occurrenceType: widget.habit.occurrenceType ?? '',
+                occurrenceType: widget.habit.occurrenceType,
                 occurrenceNum: _occurrenceController.text,
                 streak: widget.habit.getStreak(),
               ),
@@ -116,8 +116,7 @@ class _EditHabitScreen extends State<EditHabitScreen> {
                   });
                 },
               ),
-              if (widget.habit.occurrenceType != 'Daily' &&
-                  widget.habit.occurrenceType != null)
+              if (widget.habit.occurrenceType != 'Daily')
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: TextFormField(

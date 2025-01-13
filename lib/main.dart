@@ -23,10 +23,13 @@ class MyApp extends StatelessWidget {
       title: '4Habits',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        //scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: firstVisit ? const WelcomeScreen() : const HabitScreen(), // select home screen
+      home: firstVisit
+          ? const WelcomeScreen()
+          : const HabitScreen(), // select home screen
     );
   }
 }

@@ -1,4 +1,3 @@
-// lib/components/connect_four_game.dart
 import 'package:flutter/material.dart';
 import '../../model/challenge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +8,8 @@ class ConnectFourGame extends StatefulWidget {
   final Challenge? challenge;
   final Move? challengeMove;
 
-  const ConnectFourGame({super.key, required this.challenge, required this.challengeMove});
+  const ConnectFourGame(
+      {super.key, required this.challenge, required this.challengeMove});
 
   @override
   _ConnectFourGameState createState() => _ConnectFourGameState();
@@ -105,14 +105,11 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
 
   Future<void> _resetGame() async {
     // Reset the game state
-    var board = List.generate(6, (_) => List.generate(7, (_) => 0));
+    //var board = List.generate(6, (_) => List.generate(7, (_) => 0));
 
     // Update the UI
     setState(() {});
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -147,17 +144,17 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
           ],
         ),
         if (!widget.challengeMove!.isMovePossible())
-        Positioned.fill(
-          child: Container(
-            color: Colors.grey.withOpacity(0.7),
-            child: const Center(
-              child: Text(
-                'You cannot play currently',
-                style: TextStyle(color: Colors.white, fontSize: 18),
+          Positioned.fill(
+            child: Container(
+              color: Colors.grey.withOpacity(0.7),
+              child: const Center(
+                child: Text(
+                  'You cannot play currently',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
               ),
             ),
           ),
-    ),
       ],
     );
   }
@@ -172,5 +169,4 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
         return Colors.white;
     }
   }
-
 }

@@ -9,7 +9,7 @@ import '../../model/move.dart';
 import '../../websocket/websocket_client.dart';
 
 class DetailedHabitScreen extends StatefulWidget {
-  Habit habit;
+  final Habit habit;
   final int index;
 
   DetailedHabitScreen({super.key, required this.habit, required this.index});
@@ -26,7 +26,6 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   final _occurrenceController = TextEditingController();
   Challenge? _challenge;
   Move? _challengeMove;
-  String _username = '';
 
   @override
   void initState() {
@@ -114,9 +113,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
           prefs.setStringList('moves', moves);
         }
       }
-
     }
-
 
     // Update the habit in SharedPreferences
     await _updateHabit();
@@ -174,7 +171,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   }
 
   /// Create a move class to monitor the possibility of a move
-  Future<void> _createMove(String challengeID) async{
+  Future<void> _createMove(String challengeID) async {
     Move challengeMove = Move(challengeID: challengeID);
     // store move in shared preferences
     final prefs = await SharedPreferences.getInstance();
@@ -184,7 +181,6 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   }
 
   Future<void> _showShareDialog() async {
-
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -197,10 +193,11 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
               TextField(
                 onChanged: (value) {
                   setState(() {
-                    _username = value;
+                    //_username = value;
                   });
                 },
-                decoration: const InputDecoration(labelText: 'Enter your Playername'),
+                decoration:
+                    const InputDecoration(labelText: 'Enter your Playername'),
               ),
             ],
           ),
@@ -236,8 +233,8 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: const Text('Delete Habit'),
-                    content:
-                        const Text('Are you sure you want to delete this habit?'),
+                    content: const Text(
+                        'Are you sure you want to delete this habit?'),
                     actions: <Widget>[
                       TextButton(
                         child: const Text('Cancel'),
@@ -309,7 +306,8 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   controller: _occurrenceController,
-                  decoration: const InputDecoration(labelText: 'Enter number of times'),
+                  decoration:
+                      const InputDecoration(labelText: 'Enter number of times'),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -344,7 +342,8 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConnectFourGame(
                   challenge: _challenge,
-                  challengeMove: _challengeMove ?? Move(challengeID: _challenge!.habitId),
+                  challengeMove:
+                      _challengeMove ?? Move(challengeID: _challenge!.habitId),
                 ),
               ),
             // Swipe to complete the habit widget

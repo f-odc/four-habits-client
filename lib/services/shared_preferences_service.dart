@@ -2,7 +2,8 @@ import 'package:four_habits_client/model/habit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
-  static final SharedPreferencesService _instance = SharedPreferencesService._internal();
+  static final SharedPreferencesService _instance =
+      SharedPreferencesService._internal();
   SharedPreferences? _preferences;
 
   factory SharedPreferencesService() {

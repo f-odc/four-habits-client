@@ -109,7 +109,7 @@ class _HabitScreenState extends State<HabitScreen> {
                   final habit = _habits[index - 1];
                   return GestureDetector(
                     onTap: () async {
-                      final result = await Navigator.push(
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailedHabitScreen(
