@@ -49,6 +49,18 @@ class SharedPreferencesService {
     await _preferences?.setStringList('habits', habits);
   }
 
+  Future<void> updateHabit(Habit habit, int index) async {
+    List<String> habits = _preferences?.getStringList('habits') ?? [];
+    habits[index] = habit.toString();
+    await _preferences?.setStringList('habits', habits);
+  }
+
+  Future<void> deleteHabit(int index) async {
+    List<String> habits = _preferences?.getStringList('habits') ?? [];
+    habits.removeAt(index);
+    await _preferences?.setStringList('habits', habits);
+  }
+
   // TODO: maybe return habits
   // get habit list
   List<String>? getHabits() {
