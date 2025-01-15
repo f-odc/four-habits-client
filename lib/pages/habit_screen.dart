@@ -5,7 +5,7 @@ import 'package:four_habits_client/components/habit_tile.dart';
 import '../model/habit.dart';
 import '../services/shared_preferences_service.dart';
 import 'habits/create_habit_screen.dart';
-import 'habits/detailed_habit_screen.dart';
+import 'habits/detailed_habit_screen2.dart';
 
 class HabitScreen extends StatefulWidget {
   const HabitScreen({super.key});
@@ -112,7 +112,7 @@ class _HabitScreenState extends State<HabitScreen> {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DetailedHabitScreen(
+                          builder: (context) => DetailedHabitScreen2(
                             habit: habit,
                             index: index - 1,
                           ),

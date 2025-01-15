@@ -6,6 +6,9 @@ class CustomCard extends StatelessWidget {
   final Color? cardColor;
   final String cardText;
   final Color? cardTextColor;
+  final String? trailingText;
+  final IconData? trailingIcon;
+  final Color? trailingIconColor;
 
   const CustomCard({
     Key? key,
@@ -14,8 +17,10 @@ class CustomCard extends StatelessWidget {
     required this.cardColor,
     required this.cardText,
     required this.cardTextColor,
+    this.trailingText,
+    this.trailingIcon,
+    this.trailingIconColor,
   }) : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +36,24 @@ class CustomCard extends StatelessWidget {
             color: cardTextColor,
           ),
         ),
+        trailing: trailingText != null || trailingIcon != null
+            ? Row(
+                // include only if tailing parameters are set
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  if (trailingText != null)
+                    Text(
+                      trailingText!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  if (trailingText != null)
+                    Icon(trailingIcon, color: trailingIconColor),
+                ],
+              )
+            : null,
       ),
     );
   }
