@@ -24,6 +24,7 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _habitNameController;
   late TextEditingController _occurrenceController;
+  bool _isDismissed = false;
 
   @override
   void initState() {
@@ -166,8 +167,9 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
                   CustomCard(
                     icon: Icons.local_fire_department_outlined,
                     iconColor: null,
-                    cardColor:
-                        Theme.of(context).colorScheme.surfaceContainerLow,
+                    cardColor: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerLow, // TODO: create color file
                     cardText: 'Highest Streak:',
                     cardTextColor: null,
                     trailingIcon: Icons.local_fire_department,
@@ -197,6 +199,67 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
               ),
               const SizedBox(height: 8),
               const CustomDivider(height: 1),
+              // COMPLETE HABIT
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _isDismissed
+                          ? CustomCard(
+                              // DISPLAY CARD IF HABIT IS DISMISSED
+                              icon: Icons.check,
+                              iconColor: Colors.orange,
+                              cardColor: null,
+                              cardText: 'Habit Already Completed!',
+                              cardTextColor: Colors.orange,
+                              trailingIcon: Icons.check,
+                              trailingIconColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerLow,
+                              //centerText: true,
+                            )
+                          : Dismissible(
+                              // DISPLAY DISMISSIBLE CARD
+                              key: const Key('add-date-swipe'),
+                              direction: DismissDirection.startToEnd,
+                              onDismissed: (direction) {
+                                setState(() {
+                                  widget.habit.addCurrentDate();
+                                  _isDismissed = true;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Hurrah! You completed your habit today! Keep the streak going!'),
+                                    backgroundColor: Colors.orange,
+                                  ),
+                                );
+                              },
+                              background: CustomCard(
+                                icon: Icons.check,
+                                iconColor: Colors.orange[100],
+                                cardColor: Colors.orange,
+                                cardText: '',
+                                cardTextColor: Colors.orange,
+                              ),
+                              child: CustomCard(
+                                icon: Icons.swipe_right,
+                                iconColor: Colors.orange,
+                                cardColor: Colors.orange[100],
+                                cardText: 'Swipe to complete Habit',
+                                cardTextColor: Colors.orange,
+                                trailingIcon: Icons.swipe_right,
+                                trailingIconColor: Colors.orange[100],
+                                centerText: true,
+                              ),
+                            ),
+                      const SizedBox(height: 30), // Adjust the height as needed
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

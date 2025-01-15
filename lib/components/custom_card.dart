@@ -9,6 +9,7 @@ class CustomCard extends StatelessWidget {
   final String? trailingText;
   final IconData? trailingIcon;
   final Color? trailingIconColor;
+  final bool? centerText;
 
   const CustomCard({
     Key? key,
@@ -20,6 +21,7 @@ class CustomCard extends StatelessWidget {
     this.trailingText,
     this.trailingIcon,
     this.trailingIconColor,
+    this.centerText = false,
   }) : super(key: key);
 
   @override
@@ -29,6 +31,7 @@ class CustomCard extends StatelessWidget {
       child: ListTile(
         leading: Icon(icon, color: iconColor),
         title: Text(
+          textAlign: centerText! ? TextAlign.center : TextAlign.start,
           cardText,
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -49,7 +52,7 @@ class CustomCard extends StatelessWidget {
                         fontSize: 20.0,
                       ),
                     ),
-                  if (trailingText != null)
+                  if (trailingIcon != null)
                     Icon(trailingIcon, color: trailingIconColor),
                 ],
               )
