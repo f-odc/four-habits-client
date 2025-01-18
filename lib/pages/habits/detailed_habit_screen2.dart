@@ -206,6 +206,8 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      const CustomDivider(height: 1),
+                      const SizedBox(height: 8),
                       _isDismissed
                           ? CustomCard(
                               // DISPLAY CARD IF HABIT IS DISMISSED
