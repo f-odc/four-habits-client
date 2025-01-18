@@ -38,8 +38,8 @@ class HabitTile extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const Text(
-              '0',
+            Text(
+              '$streak',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20.0,
