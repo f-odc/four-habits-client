@@ -76,13 +76,25 @@ class Habit {
   int _calculateDailyStreak(DateTime now) {
     int streak = 0;
     DateTime currentDate = now;
+    currentDate =
+        DateTime(currentDate.year, currentDate.month, currentDate.day);
 
-    while (completedDates.any((date) =>
-    date.year == currentDate.year &&
-        date.month == currentDate.month &&
-        date.day == currentDate.day)) {
-      streak++;
-      currentDate = currentDate.subtract(const Duration(days: 1));
+    // check if today is completed else go one day back
+    // important else streak will be 0 if you do not complete today
+    if (completedDates.isNotEmpty &&
+        completedDates.first.isAtSameMomentAs(currentDate)) {
+    } else {
+      currentDate = currentDate
+          .subtract(const Duration(days: 1)); // start with the day before today
+    }
+
+    for (DateTime date in completedDates) {
+      if (date.isAtSameMomentAs(currentDate)) {
+        streak++;
+        currentDate = currentDate.subtract(const Duration(days: 1));
+      } else {
+        break;
+      }
     }
 
     return streak;
@@ -93,8 +105,8 @@ class Habit {
     DateTime startOfWeek = now.subtract(const Duration(days: 7));
     DateTime endOfWeek = now;
 
-
-    while (_countCompletedDatesInRange(startOfWeek, endOfWeek) >= timesPerWeek) {
+    while (
+        _countCompletedDatesInRange(startOfWeek, endOfWeek) >= timesPerWeek) {
       streak++;
       startOfWeek = startOfWeek.subtract(const Duration(days: 7));
       endOfWeek = endOfWeek.subtract(const Duration(days: 7));
@@ -108,7 +120,8 @@ class Habit {
     DateTime startOfMonth = now.subtract(const Duration(days: 30));
     DateTime endOfMonth = now;
 
-    while (_countCompletedDatesInRange(startOfMonth, endOfMonth) >= timesPerMonth) {
+    while (_countCompletedDatesInRange(startOfMonth, endOfMonth) >=
+        timesPerMonth) {
       streak++;
       startOfMonth = startOfMonth.subtract(const Duration(days: 30));
       endOfMonth = endOfMonth.subtract(const Duration(days: 30));
@@ -118,6 +131,10 @@ class Habit {
   }
 
   int _countCompletedDatesInRange(DateTime start, DateTime end) {
-    return completedDates.where((date) => date.isAfter(start.subtract(const Duration(days: 1))) && date.isBefore(end.add(const Duration(days: 1)))).length;
+    return completedDates
+        .where((date) =>
+            date.isAfter(start.subtract(const Duration(days: 1))) &&
+            date.isBefore(end.add(const Duration(days: 1))))
+        .length;
   }
 }
