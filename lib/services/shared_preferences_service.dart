@@ -61,9 +61,13 @@ class SharedPreferencesService {
     await _preferences?.setStringList('habits', habits);
   }
 
-  // TODO: maybe return habits
   // get habit list
-  List<String>? getHabits() {
-    return _preferences?.getStringList('habits');
+  List<Habit> getHabits() {
+    List<String> habitList = _preferences?.getStringList('habits') ?? [];
+    List<Habit> habits = [];
+    for (var habitString in habitList) {
+      habits.add(Habit.fromString(habitString));
+    }
+    return habits;
   }
 }

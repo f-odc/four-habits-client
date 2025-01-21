@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:four_habits_client/components/custom_card.dart';
 import 'package:four_habits_client/components/custom_divider.dart';
 import 'package:four_habits_client/components/habit_tile.dart';
+
 import '../model/habit.dart';
 import '../services/shared_preferences_service.dart';
 import 'habits/create_habit_screen.dart';
@@ -27,12 +28,8 @@ class _HabitScreenState extends State<HabitScreen> {
   }
 
   Future<void> _loadHabit() async {
-    List<String> habitStrings = pref.getHabits() ?? [];
-
     setState(() {
-      _habits = habitStrings.map((habitString) {
-        return Habit.fromString(habitString);
-      }).toList();
+      _habits = pref.getHabits();
     });
   }
 
