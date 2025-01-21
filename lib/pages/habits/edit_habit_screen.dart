@@ -83,7 +83,9 @@ class _EditHabitScreen extends State<EditHabitScreen> {
                   return null;
                 },
                 onChanged: (value) {
-                  setState(() {});
+                  setState(() {
+                    widget.habit.name = value;
+                  });
                 },
               ),
               const SizedBox(height: 8),
@@ -139,7 +141,9 @@ class _EditHabitScreen extends State<EditHabitScreen> {
                       return null;
                     },
                     onChanged: (value) {
-                      setState(() {});
+                      setState(() {
+                        widget.habit.occurrenceNum = value;
+                      });
                     },
                   ),
                 ),
