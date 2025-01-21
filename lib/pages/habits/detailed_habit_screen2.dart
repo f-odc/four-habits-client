@@ -8,6 +8,8 @@ import '../../services/shared_preferences_service.dart';
 import 'detailed_habit_logic.dart';
 import 'edit_habit_screen.dart';
 
+// TODO: check if habit can be made final
+// ignore: must_be_immutable
 class DetailedHabitScreen2 extends StatefulWidget {
   Habit habit;
   final int index;

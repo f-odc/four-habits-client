@@ -6,10 +6,6 @@ void main() {
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   DateTime nowMinus1 = now.subtract(const Duration(days: 1));
   DateTime nowMinus2 = now.subtract(const Duration(days: 2));
-  DateTime nowMinus3 = now.subtract(const Duration(days: 3));
-  DateTime nowMinus4 = now.subtract(const Duration(days: 4));
-  DateTime nowMinus7 = now.subtract(const Duration(days: 7));
-  DateTime nowMinus8 = now.subtract(const Duration(days: 8));
 
   group('Habit getStreak', () {
     test('Empty list', () {
