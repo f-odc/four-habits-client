@@ -33,6 +33,15 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
     _habitNameController = TextEditingController(text: widget.habit.name);
     _occurrenceController =
         TextEditingController(text: widget.habit.occurrenceNum);
+    // Check if the habit was completed today
+    List<DateTime> lastCompletedDate = widget.habit.completedDates;
+    if (lastCompletedDate.isNotEmpty) {
+      DateTime now = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      if (lastCompletedDate.first.isAtSameMomentAs(now)) {
+        _isDismissed = true;
+      }
+    }
   }
 
   @override
@@ -244,6 +253,11 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
                               onDismissed: (direction) {
                                 setState(() {
                                   widget.habit.addCurrentDate();
+                                  print(widget.habit.completedDates);
+                                  pref.updateHabit(
+                                      widget.habit,
+                                      widget
+                                          .index); // Update habit in shared preferences
                                   _isDismissed = true;
                                 });
                                 ScaffoldMessenger.of(context).showSnackBar(
