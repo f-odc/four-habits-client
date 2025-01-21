@@ -48,9 +48,11 @@ class Habit {
     );
   }
 
-  // Method to add the current date
+  // Add the current date as a first element in the completedDates list.
   void addCurrentDate() {
-    completedDates.add(DateTime.now());
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day);
+    completedDates.insert(0, date);
   }
 
   int getStreak() {
