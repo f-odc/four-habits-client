@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'services/shared_preferences_service.dart';
-import 'pages/welcome_screen.dart';
+
 import 'pages/habit_screen.dart';
+import 'pages/welcome_screen.dart';
+import 'services/shared_preferences_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SharedPreferencesService().init();
   final prefs = SharedPreferencesService();
+  await prefs.init();
   bool firstVisit = prefs.getFirstVisit() ?? true;
 
   runApp(MyApp(firstVisit: firstVisit));

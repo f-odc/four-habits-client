@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+
 import '../../model/habit.dart';
 import '../../services/shared_preferences_service.dart';
 
@@ -7,8 +8,6 @@ class CreateHabitLogic {
 
   Future<void> saveHabit(
       String habitName, String occurrenceType, String occurrenceNum) async {
-    await _prefsService.init();
-
     // Default occurrenceNum to '1' if it is empty
     if (occurrenceNum.isEmpty) {
       occurrenceNum = '1';
