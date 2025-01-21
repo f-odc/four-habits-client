@@ -4,15 +4,15 @@ import 'package:four_habits_client/model/habit.dart';
 import '../../components/custom_card.dart';
 import '../../components/custom_divider.dart';
 import '../../components/habit_tile.dart';
+import '../../services/shared_preferences_service.dart';
 import 'detailed_habit_logic.dart';
 import 'edit_habit_screen.dart';
 
 class DetailedHabitScreen2 extends StatefulWidget {
-  final Habit habit;
+  Habit habit;
   final int index;
 
-  const DetailedHabitScreen2(
-      {Key? key, required this.habit, required this.index})
+  DetailedHabitScreen2({Key? key, required this.habit, required this.index})
       : super(key: key);
 
   @override
@@ -24,6 +24,7 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _habitNameController;
   late TextEditingController _occurrenceController;
+  final pref = SharedPreferencesService();
   bool _isDismissed = false;
 
   @override
@@ -32,6 +33,20 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
     _habitNameController = TextEditingController(text: widget.habit.name);
     _occurrenceController =
         TextEditingController(text: widget.habit.occurrenceNum);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadHabit();
+  }
+
+  Future<void> _loadHabit() async {
+    setState(() {
+      widget.habit = pref.getHabit(widget.index);
+      _habitNameController.text = widget.habit.name;
+      _occurrenceController.text = widget.habit.occurrenceNum;
+    });
   }
 
   @override
@@ -130,7 +145,7 @@ class _DetailedHabitScreen2State extends State<DetailedHabitScreen2> {
                           index: widget.index,
                         ),
                       ),
-                    );
+                    ).then((value) => _loadHabit());
                   },
                 ),
                 IconButton(
