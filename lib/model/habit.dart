@@ -100,19 +100,50 @@ class Habit {
     return streak;
   }
 
+  // Calculate the weekly streak.
   int _calculateWeeklyStreak(DateTime now, int timesPerWeek) {
     int streak = 0;
-    DateTime startOfWeek = now.subtract(const Duration(days: 7));
-    DateTime endOfWeek = now;
+    int i = 0;
 
-    while (
-        _countCompletedDatesInRange(startOfWeek, endOfWeek) >= timesPerWeek) {
-      streak++;
+    // get the start and end of the current week (from Monday to Sunday)
+    DateTime now = DateTime.now();
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+
+    int completedInFirstWeek =
+        _calculateHowManyDatesInRange(startOfWeek, endOfWeek);
+    // check if this week is completed else go one week back
+    // important else streak will be 0 if you do not complete this week
+    if (completedDates.isNotEmpty && completedInFirstWeek >= timesPerWeek) {
+    } else {
       startOfWeek = startOfWeek.subtract(const Duration(days: 7));
       endOfWeek = endOfWeek.subtract(const Duration(days: 7));
+      i = completedInFirstWeek; // ignore the dates in the first week
+    }
+    for (i; i < completedDates.length; i++) {
+      int completedInWeek =
+          _calculateHowManyDatesInRange(startOfWeek, endOfWeek);
+      if (completedInWeek >= timesPerWeek) {
+        streak++;
+        startOfWeek = startOfWeek.subtract(const Duration(days: 7));
+        endOfWeek = endOfWeek.subtract(const Duration(days: 7));
+        i += completedInWeek -
+            1; // completedInWeek includes the number of dates in the date, so we skip all dates in the week because they are already analyzed
+      } else {
+        break;
+      }
     }
 
     return streak;
+  }
+
+  // Calculate how many dates are in the range, inclusive start and end dates.
+  int _calculateHowManyDatesInRange(DateTime start, DateTime end) {
+    return completedDates
+        .where((date) =>
+            date.isAfter(start.subtract(const Duration(days: 1))) &&
+            date.isBefore(end.add(const Duration(days: 1))))
+        .length;
   }
 
   int _calculateMonthlyStreak(DateTime now, int timesPerMonth) {
