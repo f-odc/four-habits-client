@@ -106,7 +106,6 @@ class Habit {
     int i = 0;
 
     // get the start and end of the current week (from Monday to Sunday)
-    DateTime now = DateTime.now();
     DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
     DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
 
@@ -148,24 +147,49 @@ class Habit {
 
   int _calculateMonthlyStreak(DateTime now, int timesPerMonth) {
     int streak = 0;
-    DateTime startOfMonth = now.subtract(const Duration(days: 30));
-    DateTime endOfMonth = now;
+    int i = 0;
 
-    while (_countCompletedDatesInRange(startOfMonth, endOfMonth) >=
-        timesPerMonth) {
-      streak++;
-      startOfMonth = startOfMonth.subtract(const Duration(days: 30));
-      endOfMonth = endOfMonth.subtract(const Duration(days: 30));
+    // get the start and end of the current month (from 1st to last day)
+    DateTime startOfMonth = DateTime(now.year, now.month, 1);
+    DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
+    print('startOfMonth: $startOfMonth');
+    print('endOfMonth: $endOfMonth');
+
+    int completedInFirstWeek =
+        _calculateHowManyDatesInRange(startOfMonth, endOfMonth);
+    // check if this month is completed else go one month back
+    if (completedDates.isNotEmpty && completedInFirstWeek >= timesPerMonth) {
+    } else {
+      // go back one month
+      startOfMonth = _goBackOneMonth(startOfMonth);
+      endOfMonth = _goBackOneMonth(endOfMonth);
+      print('new startOfMonth: $startOfMonth');
+      print('new endOfMonth: $endOfMonth');
+      print('completedInFirstWeek: $completedInFirstWeek');
+      i = completedInFirstWeek; // ignore the dates in the first week
+    }
+    for (i; i < completedDates.length; i++) {
+      int completedInWeek =
+          _calculateHowManyDatesInRange(startOfMonth, endOfMonth);
+      if (completedInWeek >= timesPerMonth) {
+        streak++;
+        startOfMonth = _goBackOneMonth(startOfMonth);
+        endOfMonth = _goBackOneMonth(endOfMonth);
+        i += completedInWeek -
+            1; // completedInWeek includes the number of dates in the date, so we skip all dates in the week because they are already analyzed
+      } else {
+        break;
+      }
     }
 
     return streak;
   }
 
-  int _countCompletedDatesInRange(DateTime start, DateTime end) {
-    return completedDates
-        .where((date) =>
-            date.isAfter(start.subtract(const Duration(days: 1))) &&
-            date.isBefore(end.add(const Duration(days: 1))))
-        .length;
+  // Go back one month. On January, go back to December of the previous year.
+  DateTime _goBackOneMonth(DateTime now) {
+    if (now.month == 1) {
+      return DateTime(now.year - 1, 12, now.day);
+    }
+    return DateTime(now.year, now.month - 1, now.day);
   }
 }

@@ -20,6 +20,8 @@ void main() {
   DateTime nowMinus12 = now.subtract(const Duration(days: 12));
   DateTime nowMinus16 = now.subtract(const Duration(days: 16));
   DateTime nowMinus30 = now.subtract(const Duration(days: 30));
+  DateTime nowMinus31 = now.subtract(const Duration(days: 31));
+  DateTime nowMinus32 = now.subtract(const Duration(days: 32));
 
   group('Habit getStreak', () {
     test('Empty list', () {
@@ -187,5 +189,70 @@ void main() {
     );
 
     expect(habit.getStreak(), 1);
+  });
+
+  // ---------------------------------------------------------------------
+
+  test('Monthly streak calculation - Empty', () {
+    Habit habit = Habit(
+      id: '3',
+      name: 'Monthly Habit',
+      occurrenceType: 'Monthly',
+      occurrenceNum: '1',
+      completedDates: [],
+    );
+
+    expect(habit.getStreak(), 0);
+  });
+
+  test('Monthly streak calculation - Normal', () {
+    Habit habit = Habit(
+      id: '3',
+      name: 'Monthly Habit',
+      occurrenceType: 'Monthly',
+      occurrenceNum: '2',
+      completedDates: [
+        now,
+        nowMinus1,
+        nowMinus2,
+      ],
+    );
+
+    expect(habit.getStreak(), 1);
+  });
+
+  test('Monthly streak calculation - In current Month', () {
+    Habit habit = Habit(
+      id: '3',
+      name: 'Monthly Habit',
+      occurrenceType: 'Monthly',
+      occurrenceNum: '2',
+      completedDates: [
+        nowMinus2,
+        nowMinus31,
+        nowMinus32,
+      ],
+    );
+
+    expect(habit.getStreak(), 1);
+  });
+
+  test(
+      'Monthly streak calculation - 2 Months completed, more than occurrence num',
+      () {
+    Habit habit = Habit(
+      id: '3',
+      name: 'Monthly Habit',
+      occurrenceType: 'Monthly',
+      occurrenceNum: '1',
+      completedDates: [
+        nowMinus2,
+        nowMinus16,
+        nowMinus31,
+        nowMinus32,
+      ],
+    );
+
+    expect(habit.getStreak(), 2);
   });
 }
