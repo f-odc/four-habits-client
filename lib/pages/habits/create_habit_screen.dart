@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:four_habits_client/components/custom_card.dart';
-import 'package:four_habits_client/components/habit_tile.dart';
 import 'package:four_habits_client/components/custom_app_bar.dart';
+import 'package:four_habits_client/components/custom_card.dart';
 import 'package:four_habits_client/components/custom_divider.dart';
+import 'package:four_habits_client/components/habit_tile.dart';
+
 import 'create_habit_logic.dart';
 
 class CreateHabitScreen extends StatefulWidget {
@@ -130,22 +131,35 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                   ),
                 ),
               const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    // save the habit
-                    await _logic.saveHabit(_habitName, _occurrenceType!,
-                        _occurrenceController.text);
-                    Navigator.pop(context, 'saved');
-                  }
-                },
-                child: CustomCard(
-                    icon: Icons.save,
-                    iconColor: Colors.orange,
-                    cardColor: Colors.orange[100],
-                    cardText: 'Save Habit',
-                    cardTextColor: Colors.orange),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const CustomDivider(height: 1),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            // save the habit
+                            await _logic.saveHabit(_habitName, _occurrenceType!,
+                                _occurrenceController.text);
+                            Navigator.pop(context, 'saved');
+                          }
+                        },
+                        child: CustomCard(
+                            icon: Icons.save,
+                            iconColor: Colors.orange,
+                            cardColor: Colors.orange[100],
+                            cardText: 'Save Habit',
+                            cardTextColor: Colors.orange),
+                      ),
+                      const SizedBox(height: 30), // Adjust the height as needed
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
