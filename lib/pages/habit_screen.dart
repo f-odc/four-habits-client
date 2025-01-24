@@ -70,68 +70,73 @@ class _HabitScreenState extends State<HabitScreen> {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          // CREATE NEW HABIT CARD
+          GestureDetector(
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateHabitScreen()),
+              );
+              if (result == 'saved') {
+                _loadHabit();
+              }
+            },
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: CustomCard(
+                icon: Icons.add,
+                iconColor: Colors.orange,
+                cardColor: Colors.orange[100],
+                cardText: 'Create New Habit',
+                cardTextColor: Colors.orange,
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          const CustomDivider(height: 1), // Top divider
+          const SizedBox(height: 12),
+          // HABIT LIST
           Expanded(
             child: ListView.builder(
-              itemCount:
-                  _habits.length + 1, // Add one for the "Create New Habit" card
+              padding: EdgeInsets.zero, // Remove padding
+              itemCount: _habits.length,
               itemBuilder: (context, index) {
-                if (index == 0) {
-                  // Create New Habit card
-                  return GestureDetector(
-                    onTap: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const CreateHabitScreen()),
-                      );
-                      if (result == 'saved') {
-                        _loadHabit();
-                      }
-                    },
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: CustomCard(
-                            icon: Icons.add,
-                            iconColor: Colors.orange,
-                            cardColor: Colors.orange[100],
-                            cardText: 'Create New Habit',
-                            cardTextColor: Colors.orange)),
-                  );
-                } else if (index == 1) {
-                  // Divider
-                  return CustomDivider(height: null);
-                } else {
-                  // Habit cards
-                  final habit = _habits[index - 1];
-                  return GestureDetector(
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailedHabitScreen2(
-                            habit: habit,
-                            index: index - 1,
-                          ),
+                // Habit cards
+                final habit = _habits[index];
+                return GestureDetector(
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailedHabitScreen2(
+                          habit: habit,
+                          index: index,
                         ),
-                      );
-                      _loadHabit();
-                    },
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        // HABIT TILE
-                        child: HabitTile(
-                            habitName: habit.name,
-                            occurrenceType: habit.occurrenceType,
-                            occurrenceNum: habit.occurrenceNum,
-                            streak: habit.getStreak())),
-                  );
-                }
+                      ),
+                    );
+                    _loadHabit();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 0.0),
+                    // HABIT TILE
+                    child: HabitTile(
+                      habitName: habit.name,
+                      occurrenceType: habit.occurrenceType,
+                      occurrenceNum: habit.occurrenceNum,
+                      streak: habit.getStreak(),
+                    ),
+                  ),
+                );
               },
             ),
           ),
-          const CustomDivider(height: 1),
-          const SizedBox(height: 30),
+          const SizedBox(height: 12), // Adjust the height as needed
+          const CustomDivider(height: 1), // Bottom divider
+          const SizedBox(height: 30), // Adjust the height as needed
         ],
       ),
     );
