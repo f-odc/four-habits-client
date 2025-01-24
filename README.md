@@ -8,7 +8,7 @@
 - [flutter_native_splash](https://pub.dev/packages/flutter_native_splash)
 
 ## Developer Notes
-Run before commit:
+Run before commit: <br>
 ```flutter analyze --no-pub``` <br>
 ```flutter test``` <br>
 ```dart fix --dry-run``` <br>
