@@ -130,6 +130,8 @@ class _HabitScreenState extends State<HabitScreen> {
               },
             ),
           ),
+          const CustomDivider(height: 1),
+          const SizedBox(height: 30),
         ],
       ),
     );
