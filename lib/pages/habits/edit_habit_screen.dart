@@ -148,22 +148,37 @@ class _EditHabitScreen extends State<EditHabitScreen> {
                   ),
                 ),
               const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    widget.habit.name = _habitNameController.text;
-                    widget.habit.occurrenceNum = _occurrenceController.text;
-                    await _habitLogic.updateHabit(widget.habit, widget.index);
-                    Navigator.pop(context, 'updated');
-                  }
-                },
-                child: CustomCard(
-                    icon: Icons.save,
-                    iconColor: Colors.orange,
-                    cardColor: Colors.orange[100],
-                    cardText: 'Update Habit',
-                    cardTextColor: Colors.orange),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const CustomDivider(height: 1),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            widget.habit.name = _habitNameController.text;
+                            widget.habit.occurrenceNum =
+                                _occurrenceController.text;
+                            await _habitLogic.updateHabit(
+                                widget.habit, widget.index);
+                            Navigator.pop(context, 'updated');
+                          }
+                        },
+                        child: CustomCard(
+                            icon: Icons.save,
+                            iconColor: Colors.orange,
+                            cardColor: Colors.orange[100],
+                            cardText: 'Update Habit',
+                            cardTextColor: Colors.orange),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
