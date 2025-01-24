@@ -22,7 +22,7 @@ class HabitTile extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
         side: highlight
-            ? BorderSide(color: Colors.orange[100]!, width: 2.0)
+            ? BorderSide(color: Colors.orange[100]!, width: 3.0)
             : BorderSide.none,
       ),
       child: ListTile(
