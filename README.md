@@ -1,16 +1,14 @@
-# four_habits_client
+# 4Habits - Client Side
 
-A new Flutter project.
+## Update App Logo
+```flutter pub run flutter_launcher_icons:main```
 
-## Getting Started
+## Used Packages
+- [flutter_launcher_icons](https://pub.dev/packages/flutter_launcher_icons)
+- [flutter_native_splash](https://pub.dev/packages/flutter_native_splash)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Developer Notes
+Run before commit: <br>
+```flutter analyze --no-pub``` <br>
+```flutter test``` <br>
+```dart fix --dry-run``` <br>

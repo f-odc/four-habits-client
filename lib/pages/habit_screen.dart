@@ -1,8 +1,10 @@
-// new.dart
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:four_habits_client/components/custom_card.dart';
+import 'package:four_habits_client/components/custom_divider.dart';
+import 'package:four_habits_client/components/habit_tile.dart';
+
 import '../model/habit.dart';
+import '../services/shared_preferences_service.dart';
 import 'habits/create_habit_screen.dart';
 import 'habits/detailed_habit_screen.dart';
 
@@ -15,88 +17,138 @@ class HabitScreen extends StatefulWidget {
 
 class _HabitScreenState extends State<HabitScreen> {
   List<Habit> _habits = [];
+  String _username = '';
+  final pref = SharedPreferencesService();
+  DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
+      DateTime.now().day); // Date without time
 
   @override
   void initState() {
     super.initState();
     _loadHabit();
+    _loadUsername();
   }
 
-  // Use shared preferences to load the habit
-  Future<void> _loadHabit() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> habitStrings = prefs.getStringList('habits') ?? [];
+  bool isCompletedToday(Habit habit) {
+    if (habit.completedDates.isNotEmpty &&
+        habit.completedDates.first.isAtSameMomentAs(now)) {
+      return true;
+    }
+    return false;
+  }
 
-    // Convert each Habit string to a Habit object
+  Future<void> _loadHabit() async {
     setState(() {
-      _habits = habitStrings.map((habitString) {
-        return Habit.fromString(habitString);
-      }).toList();
+      _habits = pref.getHabits();
+    });
+  }
+
+  Future<void> _loadUsername() async {
+    setState(() {
+      _username = pref.getUsername() ?? 'User';
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create New Habit'),
-      ),
-      body: ListView.builder(
-        itemCount: _habits.length,
-        itemBuilder: (context, index) {
-          //List<String> habitDetails = _habits[index].split(':');
-          return GestureDetector(
+      body: Column(
+        children: [
+          const SizedBox(
+              height: 80), // Adjust this value to move the AppBar further down
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome $_username',
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                ),
+                const Text(
+                  '“Great habits are the foundation of great achievements.”',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.orange,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // CREATE NEW HABIT CARD
+          GestureDetector(
             onTap: () async {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailedHabitScreen(
-                    habit: _habits[index],
-                    index: index,
-                  ),
-                ),
+                    builder: (context) => const CreateHabitScreen()),
               );
-              // load habits again
-              _loadHabit();
+              if (result == 'saved') {
+                _loadHabit();
+              }
             },
-            child: Card(
-              child: ListTile(
-                leading: const Icon(Icons.check_circle_outline),
-                title: Text('Habit: ${_habits[index].name}'),
-                subtitle: Text(_habits[index].occurrenceType == 'Daily'
-                    ? 'Occurrence: ${_habits[index].occurrenceType}'
-                    : 'Occurrence: ${_habits[index].occurrenceType} - ${_habits[index].occurrenceNum}'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      _habits[index].getStreak().toString(), // streak
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                      ),
-                    ),
-                    const Icon(Icons.local_fire_department), // flame icon
-                  ],
-                ),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: CustomCard(
+                icon: Icons.add,
+                iconColor: Colors.orange,
+                cardColor: Colors.orange[100],
+                cardText: 'Create New Habit',
+                cardTextColor: Colors.orange,
               ),
             ),
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CreateHabitScreen()),
-          );
-          if (result == 'saved') {
-            _loadHabit();
-          }
-        },
-        tooltip: 'Add Habit',
-        child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 6),
+          const CustomDivider(height: 1), // Top divider
+          const SizedBox(height: 12),
+          // HABIT LIST
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.zero, // Remove padding
+              itemCount: _habits.length,
+              itemBuilder: (context, index) {
+                // Habit cards
+                final habit = _habits[index];
+                return GestureDetector(
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailedHabitScreen(
+                          habit: habit,
+                          index: index,
+                        ),
+                      ),
+                    );
+                    _loadHabit();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 0.0),
+                    // HABIT TILE
+                    child: HabitTile(
+                      habitName: habit.name,
+                      occurrenceType: habit.occurrenceType,
+                      occurrenceNum: habit.occurrenceNum,
+                      streak: habit.getStreak(),
+                      highlight: !isCompletedToday(habit),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 12), // Adjust the height as needed
+          const CustomDivider(height: 1), // Bottom divider
+          const SizedBox(height: 30), // Adjust the height as needed
+        ],
       ),
     );
   }
