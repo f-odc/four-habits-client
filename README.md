@@ -9,6 +9,6 @@
 
 ## Developer Notes
 Run before commit:
-```flutter analyze --no-pub```
-```flutter test```
-```dart fix --dry-run```
+```flutter analyze --no-pub``` <br>
+```flutter test``` <br>
+```dart fix --dry-run``` <br>
