@@ -5,6 +5,7 @@ class HabitTile extends StatelessWidget {
   final String occurrenceType;
   final String occurrenceNum;
   final int streak;
+  final bool highlight;
 
   const HabitTile({
     Key? key,
@@ -12,11 +13,18 @@ class HabitTile extends StatelessWidget {
     required this.occurrenceType,
     required this.occurrenceNum,
     required this.streak,
+    this.highlight = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        side: highlight
+            ? BorderSide(color: Colors.orange[100]!, width: 2.0)
+            : BorderSide.none,
+      ),
       child: ListTile(
         leading: const Icon(Icons.check_circle_outline),
         title: Text(

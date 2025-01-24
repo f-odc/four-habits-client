@@ -19,12 +19,22 @@ class _HabitScreenState extends State<HabitScreen> {
   List<Habit> _habits = [];
   String _username = '';
   final pref = SharedPreferencesService();
+  DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
+      DateTime.now().day); // Date without time
 
   @override
   void initState() {
     super.initState();
     _loadHabit();
     _loadUsername();
+  }
+
+  bool isCompletedToday(Habit habit) {
+    if (habit.completedDates.isNotEmpty &&
+        habit.completedDates.first.isAtSameMomentAs(now)) {
+      return true;
+    }
+    return false;
   }
 
   Future<void> _loadHabit() async {
@@ -128,6 +138,7 @@ class _HabitScreenState extends State<HabitScreen> {
                       occurrenceType: habit.occurrenceType,
                       occurrenceNum: habit.occurrenceNum,
                       streak: habit.getStreak(),
+                      highlight: !isCompletedToday(habit),
                     ),
                   ),
                 );
