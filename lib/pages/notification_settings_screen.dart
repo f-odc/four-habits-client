@@ -7,7 +7,13 @@ import '../services/notification_service.dart';
 import '../services/shared_preferences_service.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
-  const NotificationSettingsScreen({super.key});
+  final bool initialNotificationStatus;
+  final TimeOfDay initialNotificationTime;
+
+  const NotificationSettingsScreen(
+      {super.key,
+      required this.initialNotificationStatus,
+      required this.initialNotificationTime});
 
   @override
   _NotificationSettingsScreenState createState() =>
@@ -19,25 +25,14 @@ class _NotificationSettingsScreenState
   final _formKey = GlobalKey<FormState>();
   final NotificationService _notificationService = NotificationService();
   final _pref = SharedPreferencesService();
-  bool _enableNotifications = true;
-  TimeOfDay _notificationTime = TimeOfDay.now();
+  late bool _enableNotifications;
+  late TimeOfDay _notificationTime;
 
   @override
   void initState() {
     super.initState();
-    _loadSettings();
-  }
-
-  // load enableNotifications and notificationTime from SharedPreferences
-  Future<void> _loadSettings() async {
-    final (notificationStatus, notificationTime) =
-        await _pref.getNotificationSettings();
-    print(notificationStatus);
-    print(notificationTime);
-    setState(() {
-      _enableNotifications = notificationStatus;
-      _notificationTime = notificationTime;
-    });
+    _enableNotifications = widget.initialNotificationStatus;
+    _notificationTime = widget.initialNotificationTime;
   }
 
   // store enableNotifications and notificationTime in SharedPreferences

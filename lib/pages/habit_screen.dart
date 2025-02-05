@@ -23,6 +23,7 @@ class _HabitScreenState extends State<HabitScreen> {
   DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
       DateTime.now().day); // Date without time
   bool _notificationEnabled = false;
+  TimeOfDay _notificationTime = TimeOfDay.now();
 
   @override
   void initState() {
@@ -54,9 +55,11 @@ class _HabitScreenState extends State<HabitScreen> {
 
   Future<void> _loadNotificationSettings() async {
     print('loading notification settings');
-    final (notificationStatus, _) = await pref.getNotificationSettings();
+    final (notificationStatus, notificationTime) =
+        await pref.getNotificationSettings();
     setState(() {
       _notificationEnabled = notificationStatus;
+      _notificationTime = notificationTime;
     });
   }
 
@@ -76,7 +79,10 @@ class _HabitScreenState extends State<HabitScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const NotificationSettingsScreen(),
+                  builder: (context) => NotificationSettingsScreen(
+                    initialNotificationStatus: _notificationEnabled,
+                    initialNotificationTime: _notificationTime,
+                  ),
                 ),
               );
               // TODO: update notification settings to update the icon
