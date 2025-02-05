@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:four_habits_client/model/habit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -74,5 +75,20 @@ class SharedPreferencesService {
       habits.add(Habit.fromString(habitString));
     }
     return habits;
+  }
+
+  void storeNotificationSettings(
+      bool enableNotifications, TimeOfDay notificationTime) {
+    _preferences?.setBool('enableNotifications', enableNotifications);
+    _preferences?.setInt('notificationHour', notificationTime.hour);
+    _preferences?.setInt('notificationMinute', notificationTime.minute);
+  }
+
+  (bool, TimeOfDay) getNotificationSettings() {
+    bool enableNotifications =
+        _preferences?.getBool('enableNotifications') ?? true;
+    int hour = _preferences?.getInt('notificationHour') ?? 18;
+    int minute = _preferences?.getInt('notificationMinute') ?? 0;
+    return (enableNotifications, TimeOfDay(hour: hour, minute: minute));
   }
 }

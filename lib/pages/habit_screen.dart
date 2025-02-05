@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:four_habits_client/components/custom_card.dart';
 import 'package:four_habits_client/components/custom_divider.dart';
 import 'package:four_habits_client/components/habit_tile.dart';
+import 'package:four_habits_client/pages/notification_settings_screen.dart';
 
 import '../model/habit.dart';
 import '../services/shared_preferences_service.dart';
@@ -21,12 +22,14 @@ class _HabitScreenState extends State<HabitScreen> {
   final pref = SharedPreferencesService();
   DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
       DateTime.now().day); // Date without time
+  bool _notificationEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _loadHabit();
     _loadUsername();
+    _loadNotificationSettings();
   }
 
   bool isCompletedToday(Habit habit) {
@@ -49,13 +52,43 @@ class _HabitScreenState extends State<HabitScreen> {
     });
   }
 
+  Future<void> _loadNotificationSettings() async {
+    print('loading notification settings');
+    final (notificationStatus, _) = await pref.getNotificationSettings();
+    setState(() {
+      _notificationEnabled = notificationStatus;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          //TODO: change dynamically to not filled when no notifications
+          IconButton(
+            icon: Icon(
+                _notificationEnabled
+                    ? Icons.notifications
+                    : Icons.notifications_none_outlined,
+                color: Colors.orange),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationSettingsScreen(),
+                ),
+              );
+              // TODO: update notification settings to update the icon
+              _loadNotificationSettings();
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           const SizedBox(
-              height: 80), // Adjust this value to move the AppBar further down
+              height: 10), // Adjust this value to move the AppBar further down
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
