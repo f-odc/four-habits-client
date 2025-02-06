@@ -7,13 +7,14 @@ import '../services/notification_service.dart';
 import '../services/shared_preferences_service.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
-  final bool initialNotificationStatus;
+  final bool initialEnableNotifications;
   final TimeOfDay initialNotificationTime;
 
-  const NotificationSettingsScreen(
-      {super.key,
-      required this.initialNotificationStatus,
-      required this.initialNotificationTime});
+  const NotificationSettingsScreen({
+    super.key,
+    required this.initialEnableNotifications,
+    required this.initialNotificationTime,
+  });
 
   @override
   _NotificationSettingsScreenState createState() =>
@@ -31,7 +32,7 @@ class _NotificationSettingsScreenState
   @override
   void initState() {
     super.initState();
-    _enableNotifications = widget.initialNotificationStatus;
+    _enableNotifications = widget.initialEnableNotifications;
     _notificationTime = widget.initialNotificationTime;
   }
 
@@ -65,11 +66,9 @@ class _NotificationSettingsScreenState
                     _enableNotifications = value;
                   });
                   if (value) {
-                    print("Starting notifications");
                     // Enable notifications logic here
                     await _notificationService.periodicNotification();
                   } else {
-                    print("Stopping notifications");
                     // Disable notifications logic here
                     await _notificationService.stopNotification();
                   }
@@ -112,8 +111,8 @@ class _NotificationSettingsScreenState
                         onTap: () {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
-                            // Save notification settings logic here
-                            Navigator.pop(context);
+                            Navigator.pop(context,
+                                true); // Return true to indicate settings were changed
                           }
                         },
                         child: CustomCard(

@@ -22,8 +22,8 @@ class _HabitScreenState extends State<HabitScreen> {
   final pref = SharedPreferencesService();
   DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
       DateTime.now().day); // Date without time
-  bool _notificationEnabled = false;
-  TimeOfDay _notificationTime = TimeOfDay.now();
+  late bool _notificationEnabled;
+  late TimeOfDay _notificationTime;
 
   @override
   void initState() {
@@ -54,7 +54,6 @@ class _HabitScreenState extends State<HabitScreen> {
   }
 
   Future<void> _loadNotificationSettings() async {
-    print('loading notification settings');
     final (notificationStatus, notificationTime) =
         await pref.getNotificationSettings();
     setState(() {
@@ -68,25 +67,26 @@ class _HabitScreenState extends State<HabitScreen> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          //TODO: change dynamically to not filled when no notifications
           IconButton(
             icon: Icon(
                 _notificationEnabled
                     ? Icons.notifications
                     : Icons.notifications_none_outlined,
                 color: Colors.orange),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => NotificationSettingsScreen(
-                    initialNotificationStatus: _notificationEnabled,
+                    initialEnableNotifications: _notificationEnabled,
                     initialNotificationTime: _notificationTime,
                   ),
                 ),
               );
-              // TODO: update notification settings to update the icon
-              _loadNotificationSettings();
+              // update notification settings to update the icon when the user returns
+              if (result == true) {
+                _loadNotificationSettings();
+              }
             },
           ),
         ],
