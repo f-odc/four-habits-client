@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:four_habits_client/services/notification_service.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import 'pages/habit_screen.dart';
 import 'pages/welcome_screen.dart';
@@ -17,15 +19,20 @@ void main() async {
   bool firstVisit = prefs.getFirstVisit() ?? true;
   firstVisit = true;
 
+  // --- NOTIFICATION SETTINGS ---
   // Request permissions
   await requestPermissions();
   await requestExactAlarmPermission();
 
+  // initialize timezone
+  tz.initializeTimeZones();
+  // get current timezone
+  tz.setLocalLocation(tz.getLocation(DateTime.now().timeZoneName));
+
   // init Notifications
   final notificationService = NotificationService();
 
-  // TODO: if enableNotifications is true, schedule daily notification
-  //await notificationService.periodicNotification();
+  // --- END NOTIFICATION SETTINGS ---
 
   runApp(MyApp(firstVisit: firstVisit));
 }
