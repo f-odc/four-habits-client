@@ -22,7 +22,7 @@ class _HabitScreenState extends State<HabitScreen> {
   final pref = SharedPreferencesService();
   DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
       DateTime.now().day); // Date without time
-  late bool _notificationEnabled;
+  late bool _notificationEnabled = false;
   late TimeOfDay _notificationTime;
 
   @override
