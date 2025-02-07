@@ -36,18 +36,20 @@ class _NotificationSettingsScreenState
     _notificationTime = widget.initialNotificationTime;
   }
 
-  // TODO: only save settings if save notification button is pressed
-  // store enableNotifications and notificationTime in SharedPreferences
+  // save notification settings and re-schedule notification depending on the settings
   Future<void> _saveSettings() async {
     _pref.storeNotificationSettings(_enableNotifications, _notificationTime);
+    if (_enableNotifications) {
+      await _notificationService.scheduleDailyNotification();
+    } else {
+      await _notificationService.stopNotification();
+    }
   }
-
-  // TODO: when saved is pressed, update the current notification
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Notification Settings"),
+      appBar: const CustomAppBar(title: "Daily Notification Settings"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -68,14 +70,6 @@ class _NotificationSettingsScreenState
                   setState(() {
                     _enableNotifications = value;
                   });
-                  if (value) {
-                    // Enable notifications logic here
-                    await _notificationService.scheduleDailyNotification();
-                  } else {
-                    // Disable notifications logic here
-                    await _notificationService.stopNotification();
-                  }
-                  _saveSettings();
                 },
               ),
               const SizedBox(height: 16),
@@ -97,7 +91,6 @@ class _NotificationSettingsScreenState
                     setState(() {
                       _notificationTime = picked;
                     });
-                    _saveSettings();
                   }
                 },
               ),
@@ -113,6 +106,7 @@ class _NotificationSettingsScreenState
                       GestureDetector(
                         onTap: () {
                           if (_formKey.currentState!.validate()) {
+                            _saveSettings();
                             _formKey.currentState!.save();
                             Navigator.pop(context,
                                 true); // Return true to indicate settings were changed
