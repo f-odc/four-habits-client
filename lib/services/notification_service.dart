@@ -1,13 +1,14 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:four_habits_client/services/shared_preferences_service.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  final pref = SharedPreferencesService();
 
   // IOS was deleted
   NotificationService() {
-    //tz.initializeTimeZones();
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
@@ -41,36 +42,25 @@ class NotificationService {
   }
 
   Future<void> scheduleDailyNotification() async {
-    print("Scheduling daily notification");
-    // request permissions
-    AndroidFlutterLocalNotificationsPlugin().requestExactAlarmsPermission();
+    final (_, notificationTime) = pref.getNotificationSettings();
+    final scheduledTime =
+        _nextInstanceOfTime(notificationTime.hour, notificationTime.minute);
 
-    print(
-        tz.TZDateTime.now(tz.local).add(const Duration(hours: 1, seconds: 5)));
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-        '0', 'Connect 4',
-        channelDescription: 'A move was performed',
+        'daily_notification_channel_id', 'Daily Notifications',
+        channelDescription: 'Channel for daily notifications',
         importance: Importance.max,
         priority: Priority.high,
         showWhen: false);
-    var platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics, iOS: null);
+    var platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        'Daily Reminder',
-        'This is your daily reminder!',
-        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-        const NotificationDetails(
-            android: AndroidNotificationDetails(
-                'full screen channel id', 'full screen channel name',
-                channelDescription: 'full screen channel description',
-                priority: Priority.high,
-                importance: Importance.high,
-                fullScreenIntent: true)),
+    await flutterLocalNotificationsPlugin.zonedSchedule(0, 'Daily Reminder',
+        'This is your daily reminder!', scheduledTime, platformChannelSpecifics,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time);
   }
 
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {

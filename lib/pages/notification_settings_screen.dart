@@ -36,10 +36,13 @@ class _NotificationSettingsScreenState
     _notificationTime = widget.initialNotificationTime;
   }
 
+  // TODO: only save settings if save notification button is pressed
   // store enableNotifications and notificationTime in SharedPreferences
   Future<void> _saveSettings() async {
     _pref.storeNotificationSettings(_enableNotifications, _notificationTime);
   }
+
+  // TODO: when saved is pressed, update the current notification
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +70,7 @@ class _NotificationSettingsScreenState
                   });
                   if (value) {
                     // Enable notifications logic here
-                    await _notificationService.periodicNotification();
+                    await _notificationService.scheduleDailyNotification();
                   } else {
                     // Disable notifications logic here
                     await _notificationService.stopNotification();
