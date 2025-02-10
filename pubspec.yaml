@@ -104,13 +104,13 @@ flutter_icons:
   ios: true
   image_path: "assets/4Habits-Logo.png"
   remove_alpha_ios: true
-  adaptive_icon_background: "#000000"
+  adaptive_icon_background: "#ff9400"
   adaptive_icon_foreground: "assets/4Habits-Logo.png"
   web:
     generate: true
     image_path: "assets/4Habits-Logo.png"
-    background_color: "#hexcode"
-    theme_color: "#hexcode"
+    background_color: "#ff9400"
+    theme_color: "#ff9400"
   windows:
     generate: true
     image_path: "assets/4Habits-Logo.png"

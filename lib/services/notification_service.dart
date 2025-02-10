@@ -14,7 +14,7 @@ class NotificationService {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
     var initializationSettingsAndroid =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
+        const AndroidInitializationSettings('ic_notification');
     var initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -33,7 +33,8 @@ class NotificationService {
         channelDescription: 'A move was performed',
         importance: Importance.max,
         priority: Priority.high,
-        showWhen: false);
+        showWhen: false,
+        icon: 'ic_notification');
     var platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics, iOS: null);
     await flutterLocalNotificationsPlugin.show(
@@ -51,7 +52,8 @@ class NotificationService {
         channelDescription: 'Channel for daily notifications',
         importance: Importance.max,
         priority: Priority.high,
-        showWhen: false);
+        showWhen: false,
+        icon: 'ic_notification');
     var platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
