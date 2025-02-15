@@ -57,8 +57,12 @@ class NotificationService {
     var platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(0, 'Daily Reminder',
-        'This is your daily reminder!', scheduledTime, platformChannelSpecifics,
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        '✅ Stay on Track!',
+        'Another day, another chance to be your best. Complete your habits today!',
+        scheduledTime,
+        platformChannelSpecifics,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
