@@ -17,7 +17,6 @@ void main() async {
   final prefs = SharedPreferencesService();
   await prefs.init();
   bool firstVisit = prefs.getFirstVisit() ?? true;
-  firstVisit = true;
 
   // --- NOTIFICATION SETTINGS ---
   // Request permissions
@@ -30,7 +29,7 @@ void main() async {
   tz.setLocalLocation(tz.getLocation(DateTime.now().timeZoneName));
 
   // init Notifications
-  final notificationService = NotificationService();
+  NotificationService();
 
   // --- END NOTIFICATION SETTINGS ---
 
