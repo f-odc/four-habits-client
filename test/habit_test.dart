@@ -31,6 +31,7 @@ void main() {
         occurrenceType: 'Daily',
         occurrenceNum: '1',
         completedDates: [],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 0);
@@ -47,6 +48,7 @@ void main() {
           nowMinus1Daily,
           nowMinus2Daily,
         ],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 3);
@@ -62,6 +64,7 @@ void main() {
           nowMinus1Daily,
           nowMinus2Daily,
         ],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 2);
@@ -77,6 +80,7 @@ void main() {
           nowDaily,
           nowMinus2Daily,
         ],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 1);
@@ -91,6 +95,7 @@ void main() {
         occurrenceType: 'Weekly',
         occurrenceNum: '3',
         completedDates: [],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 0);
@@ -107,6 +112,7 @@ void main() {
           nowMinus1,
           nowMinus2,
         ],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 1);
@@ -122,6 +128,7 @@ void main() {
           nowMinus1,
           nowMinus2,
         ],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 0);
@@ -141,6 +148,7 @@ void main() {
           nowMinus10,
           nowMinus12,
         ],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 1);
@@ -160,6 +168,7 @@ void main() {
           nowMinus8,
           nowMinus12,
         ],
+        highestStreak: 0,
       );
 
       expect(habit.getStreak(), 2);
@@ -186,6 +195,7 @@ void main() {
         nowMinus16,
         nowMinus30,
       ],
+      highestStreak: 0,
     );
 
     expect(habit.getStreak(), 1);
@@ -200,6 +210,7 @@ void main() {
       occurrenceType: 'Monthly',
       occurrenceNum: '1',
       completedDates: [],
+      highestStreak: 0,
     );
 
     expect(habit.getStreak(), 0);
@@ -216,6 +227,7 @@ void main() {
         nowMinus1,
         nowMinus2,
       ],
+      highestStreak: 0,
     );
 
     expect(habit.getStreak(), 1);
@@ -232,6 +244,7 @@ void main() {
         nowMinus31,
         nowMinus32,
       ],
+      highestStreak: 0,
     );
 
     expect(habit.getStreak(), 1);
@@ -251,6 +264,7 @@ void main() {
         nowMinus31,
         nowMinus32,
       ],
+      highestStreak: 0,
     );
 
     expect(habit.getStreak(), 2);

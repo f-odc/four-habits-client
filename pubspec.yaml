@@ -34,6 +34,8 @@ dependencies:
     sdk: flutter
   http: ^0.13.4
   flutter_native_splash: ^2.4.4
+  permission_handler: ^10.2.0
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -41,7 +43,7 @@ dependencies:
   cupertino_icons: ^1.0.6
 
   shared_preferences: any
-  flutter_local_notifications: any
+  flutter_local_notifications: ^18.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -102,13 +104,13 @@ flutter_icons:
   ios: true
   image_path: "assets/4Habits-Logo.png"
   remove_alpha_ios: true
-  adaptive_icon_background: "#000000"
+  adaptive_icon_background: "#ff9400"
   adaptive_icon_foreground: "assets/4Habits-Logo.png"
   web:
     generate: true
     image_path: "assets/4Habits-Logo.png"
-    background_color: "#hexcode"
-    theme_color: "#hexcode"
+    background_color: "#ff9400"
+    theme_color: "#ff9400"
   windows:
     generate: true
     image_path: "assets/4Habits-Logo.png"

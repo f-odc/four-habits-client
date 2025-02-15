@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../services/shared_preferences_service.dart';
 import 'habit_screen.dart';
 
@@ -60,14 +61,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     suffixIcon: IconButton(
-                      icon: const Icon(Icons.arrow_forward, color: Colors.orange),
+                      icon:
+                          const Icon(Icons.arrow_forward, color: Colors.orange),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           await prefs.setUsername(_usernameController.text);
                           await prefs.setFirstVisit(false);
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const HabitScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => const HabitScreen()),
                           );
                         }
                       },

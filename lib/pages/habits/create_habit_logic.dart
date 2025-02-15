@@ -20,6 +20,7 @@ class CreateHabitLogic {
       occurrenceType: occurrenceType,
       occurrenceNum: occurrenceNum,
       completedDates: [],
+      highestStreak: 0,
     );
 
     // add habit

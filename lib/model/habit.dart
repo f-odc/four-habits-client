@@ -6,7 +6,7 @@ class Habit {
   String occurrenceType;
   String occurrenceNum;
   List<DateTime> completedDates;
-  int highestStreak = 0;
+  int highestStreak;
 
   Habit({
     required this.id,
@@ -14,7 +14,7 @@ class Habit {
     required this.occurrenceType,
     required this.occurrenceNum,
     required this.completedDates,
-    highestStreak,
+    required this.highestStreak,
   });
 
   // Convert a Habit object into a String.
@@ -53,6 +53,7 @@ class Habit {
     DateTime now = DateTime.now();
     DateTime date = DateTime(now.year, now.month, now.day);
     completedDates.insert(0, date);
+    getStreak(); // update the highest streak
   }
 
   int getStreak() {
@@ -152,8 +153,6 @@ class Habit {
     // get the start and end of the current month (from 1st to last day)
     DateTime startOfMonth = DateTime(now.year, now.month, 1);
     DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
-    print('startOfMonth: $startOfMonth');
-    print('endOfMonth: $endOfMonth');
 
     int completedInFirstWeek =
         _calculateHowManyDatesInRange(startOfMonth, endOfMonth);
@@ -163,9 +162,6 @@ class Habit {
       // go back one month
       startOfMonth = _goBackOneMonth(startOfMonth);
       endOfMonth = _goBackOneMonth(endOfMonth);
-      print('new startOfMonth: $startOfMonth');
-      print('new endOfMonth: $endOfMonth');
-      print('completedInFirstWeek: $completedInFirstWeek');
       i = completedInFirstWeek; // ignore the dates in the first week
     }
     for (i; i < completedDates.length; i++) {
