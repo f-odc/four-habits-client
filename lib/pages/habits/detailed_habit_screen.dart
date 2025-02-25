@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:four_habits_client/model/habit.dart';
+import 'package:simple_heatmap_calendar/simple_heatmap_calendar.dart';
 
 import '../../components/custom_card.dart';
 import '../../components/custom_divider.dart';
@@ -28,11 +29,16 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   late TextEditingController _occurrenceController;
   final pref = SharedPreferencesService();
   bool _isDismissed = false;
-
+  late Map<DateTime, int> heatmapData;
   @override
   void initState() {
     super.initState();
     _habitNameController = TextEditingController(text: widget.habit.name);
+    // Initialize heatmapData with completed dates
+    heatmapData = {};
+    for (DateTime date in widget.habit.completedDates) {
+      heatmapData[date] = 1; // Assign a value to each completed date
+    }
     _occurrenceController =
         TextEditingController(text: widget.habit.occurrenceNum);
     // Check if the habit was completed today
@@ -225,7 +231,62 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
               ),
               const SizedBox(height: 8),
               const CustomDivider(height: 1),
-              // COMPLETE HABIT
+              Expanded(
+                child: Center(
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 400),
+                    /*child: HeatMap(
+                      startDate: DateTime(DateTime.now().year, 1,
+                          6), // TODO: start always on monday
+                      endDate: DateTime(DateTime.now().year, 3,
+                          30), // TODO: end always on sunday
+                      datasets: heatmapData,
+                      size: MediaQuery.of(context).size.width / 15,
+                      margin: EdgeInsets.all(0),
+                      colorMode: ColorMode.opacity,
+                      showColorTip: false,
+                      showText: false,
+                      colorsets: {
+                        1: Colors.orange[100]!,
+                        3: Colors.orange[300]!,
+                        5: Colors.orange[500]!,
+                        7: Colors.orange[700]!,
+                      },
+                      borderRadius: 0,
+                      onClick: (date) {
+                        print("Clicked on: $date");
+                      },
+                    ),
+
+                     */
+                    child: HeatmapCalendar<num>(
+                      startDate: DateTime(2025, 1, 1),
+                      endedDate: DateTime(2025, 4, 31),
+                      colorMap: {
+                        1: Colors.orange[100]!,
+                        2: Colors.orange[300]!,
+                        3: Colors.orange[500]!,
+                        4: Colors.orange[700]!,
+                      },
+                      selectedMap: heatmapData,
+                      cellSize: const Size.square(16.0),
+                      colorTipCellSize: const Size.square(12.0),
+                      style: const HeatmapCalendarStyle.defaults(
+                        cellValueFontSize: 6.0,
+                        cellRadius: BorderRadius.all(Radius.circular(4.0)),
+                        weekLabelValueFontSize: 12.0,
+                        monthLabelFontSize: 12.0,
+                        showYearOnMonthLabel: false,
+                      ),
+                      layoutParameters: const HeatmapLayoutParameters.defaults(
+                        monthLabelPosition: CalendarMonthLabelPosition.top,
+                        weekLabelPosition: CalendarWeekLabelPosition.left,
+                        colorTipPosition: CalendarColorTipPosition.bottom,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,

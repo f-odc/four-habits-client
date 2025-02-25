@@ -69,6 +69,8 @@ class SharedPreferencesService {
 
   // get habit list
   List<Habit> getHabits() {
+    // delete habits
+    //_preferences?.remove('habits');
     List<String> habitList = _preferences?.getStringList('habits') ?? [];
     List<Habit> habits = [];
     for (var habitString in habitList) {
