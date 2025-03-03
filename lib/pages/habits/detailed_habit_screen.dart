@@ -217,7 +217,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                         ),
                       ),
                       onTap: () {
-                        // Add your share logic here
+                        _habitLogic.shareHabit(widget.habit);
                       },
                     ),
                   ),

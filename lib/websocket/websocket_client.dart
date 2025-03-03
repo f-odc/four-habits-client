@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class WebSocketClient {
@@ -12,12 +13,15 @@ class WebSocketClient {
     var request = http.MultipartRequest('POST', Uri.parse(url))
       ..headers['Authorization'] = 'Bearer $token'
       ..fields['id'] = data['id']
-      ..fields['name'] = data['name']
-      ..fields['occurrence'] = data['occurrence']
-      ..fields['num'] = data['num']
+      ..fields['challenger'] = data['challenger']
+      ..fields['challengerID'] = data['challengerID']
+      ..fields['lastMoverID'] = data['lastMoverID']
       ..fields['board'] = jsonEncode(data['board'])
-      ..fields['challenger'] = data['challenger'].toString()
-      ..fields['score'] = data['score'].toString();
+      ..fields['canPerformMove'] = data['canPerformMove'].toString()
+      ..fields['habitId'] = data['habitId']
+      ..fields['habitName'] = data['habitName']
+      ..fields['habitOccurrence'] = data['habitOccurrence']
+      ..fields['habitOccurrenceType'] = data['habitOccurrenceType'];
 
     var response = await request.send();
 
