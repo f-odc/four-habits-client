@@ -19,8 +19,7 @@ class HabitScreen extends StatefulWidget {
 
 class _HabitScreenState extends State<HabitScreen> {
   List<Habit> _habits = [];
-  String _username = '';
-  late Profile _profile;
+  Profile _profile = Profile(id: '', name: '');
   final pref = SharedPreferencesService();
   DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
       DateTime.now().day); // Date without time
@@ -52,7 +51,6 @@ class _HabitScreenState extends State<HabitScreen> {
   Future<void> _loadProfile() async {
     setState(() {
       _profile = pref.getProfile();
-      _username = _profile.name;
     });
   }
 
@@ -104,7 +102,7 @@ class _HabitScreenState extends State<HabitScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome $_username',
+                  'Welcome ${_profile.name}',
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
