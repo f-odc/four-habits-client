@@ -5,6 +5,7 @@ import 'package:four_habits_client/components/habit_tile.dart';
 import 'package:four_habits_client/pages/notification_settings_screen.dart';
 
 import '../model/habit.dart';
+import '../model/profile.dart';
 import '../services/shared_preferences_service.dart';
 import 'habits/create_habit_screen.dart';
 import 'habits/detailed_habit_screen.dart';
@@ -19,6 +20,7 @@ class HabitScreen extends StatefulWidget {
 class _HabitScreenState extends State<HabitScreen> {
   List<Habit> _habits = [];
   String _username = '';
+  late Profile _profile;
   final pref = SharedPreferencesService();
   DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
       DateTime.now().day); // Date without time
@@ -29,7 +31,7 @@ class _HabitScreenState extends State<HabitScreen> {
   void initState() {
     super.initState();
     _loadHabit();
-    _loadUsername();
+    _loadProfile();
     _loadNotificationSettings();
   }
 
@@ -47,9 +49,10 @@ class _HabitScreenState extends State<HabitScreen> {
     });
   }
 
-  Future<void> _loadUsername() async {
+  Future<void> _loadProfile() async {
     setState(() {
-      _username = pref.getUsername() ?? 'User';
+      _profile = pref.getProfile();
+      _username = _profile.name;
     });
   }
 

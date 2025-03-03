@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:four_habits_client/model/habit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../model/profile.dart';
+
 class SharedPreferencesService {
   static final SharedPreferencesService _instance =
       SharedPreferencesService._internal();
@@ -26,14 +28,23 @@ class SharedPreferencesService {
     return _preferences?.getBool('firstVisit');
   }
 
+  Future<void> setProfile(Profile profile) async {
+    await _preferences?.setString('profile', profile.toString());
+  }
+
+  Profile getProfile() {
+    String? profileString = _preferences?.getString('profile');
+    return Profile.fromString(profileString ?? '');
+  }
+
   // Set and get username
-  Future<void> setUsername(String value) async {
+  /*Future<void> setUsername(String value) async {
     await _preferences?.setString('username', value);
   }
 
   String? getUsername() {
     return _preferences?.getString('username');
-  }
+  }*/
 
   // Set habit list
   Future<void> setHabits(List<String> value) async {
