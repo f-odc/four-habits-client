@@ -47,9 +47,11 @@ class DetailedHabitLogic {
       habitOccurrenceNum: habit.occurrenceNum,
     );
 
-    await WebSocketClient.post(challenge.toJson());
+    _prefsService.addChallenge(challenge);
 
     Share.share(
         'Check out this habit I created with Four Habits: ${challenge.id}');
+
+    await WebSocketClient.post(challenge.toJson());
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:four_habits_client/model/habit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../model/challenge.dart';
 import '../model/profile.dart';
 
 class SharedPreferencesService {
@@ -36,15 +37,6 @@ class SharedPreferencesService {
     String? profileString = _preferences?.getString('profile');
     return Profile.fromString(profileString ?? '');
   }
-
-  // Set and get username
-  /*Future<void> setUsername(String value) async {
-    await _preferences?.setString('username', value);
-  }
-
-  String? getUsername() {
-    return _preferences?.getString('username');
-  }*/
 
   // Set habit list
   Future<void> setHabits(List<String> value) async {
@@ -86,6 +78,39 @@ class SharedPreferencesService {
       habits.add(Habit.fromString(habitString));
     }
     return habits;
+  }
+
+  Future<void> addChallenge(Challenge challenge) async {
+    List<String> challengeList =
+        _preferences?.getStringList('challenges') ?? [];
+    challengeList.add(challenge.toString());
+    await _preferences?.setStringList('challenges', challengeList);
+  }
+
+  Future<void> updateChallenge(Challenge challenge) async {
+    List<String> challengeList =
+        _preferences?.getStringList('challenges') ?? [];
+    for (var storedChallenge in challengeList) {
+      var storedChallengeObject = Challenge.fromString(storedChallenge);
+      if (storedChallengeObject.id == challenge.id) {
+        challengeList.remove(storedChallenge);
+        challengeList.add(challenge.toString());
+        await _preferences?.setStringList('challenges', challengeList);
+        return;
+      }
+    }
+  }
+
+  Challenge? getChallenge(String id) {
+    List<String> challengeList =
+        _preferences?.getStringList('challenges') ?? [];
+    for (var challengeString in challengeList) {
+      var challenge = Challenge.fromString(challengeString);
+      if (challenge.habitId == id) {
+        return challenge;
+      }
+    }
+    return null;
   }
 
   void storeNotificationSettings(
