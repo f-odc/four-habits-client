@@ -26,7 +26,14 @@ void main() async {
   // initialize timezone
   tz.initializeTimeZones();
   // get current timezone
-  tz.setLocalLocation(tz.getLocation(DateTime.now().timeZoneName));
+  print(DateTime.now().timeZoneName);
+
+  // Get system timezone abbreviation (like "CEST", "PST", etc.)
+  String systemTimeZone = DateTime.now().timeZoneName;
+
+  // Find a valid mapping or fallback to UTC
+  String? validTimeZone = timeZoneMap[systemTimeZone] ?? "UTC";
+  tz.setLocalLocation(tz.getLocation(validTimeZone));
 
   // init Notifications
   NotificationService();
@@ -63,3 +70,70 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// Map of common timezone abbreviations to time zone names used by the timezone package to set Local Location
+Map<String, String> timeZoneMap = {
+  // Central European Time
+  "CEST": "Europe/Berlin",
+  "CET": "Europe/Berlin",
+
+  // Pacific Time (US)
+  "PDT": "America/Los_Angeles",
+  "PST": "America/Los_Angeles",
+
+  // Eastern Time (US)
+  "EDT": "America/New_York",
+  "EST": "America/New_York",
+
+  // Central Time (US)
+  "CDT": "America/Chicago",
+  "CST": "America/Chicago",
+
+  // Mountain Time (US)
+  "MDT": "America/Denver",
+  "MST": "America/Denver",
+
+  // India
+  "IST": "Asia/Kolkata",
+
+  // British Time
+  "BST": "Europe/London",
+  "GMT": "Europe/London",
+
+  // Australia
+  "AEST": "Australia/Sydney",
+  "AEDT": "Australia/Sydney",
+  "ACST": "Australia/Adelaide",
+  "ACDT": "Australia/Adelaide",
+  "AWST": "Australia/Perth",
+
+  // Brazil
+  "BRT": "America/Sao_Paulo",
+  "BRST": "America/Sao_Paulo",
+
+  // Japan
+  "JST": "Asia/Tokyo",
+
+  // China
+  "CST": "Asia/Shanghai", // Be careful, "CST" is also used for US Central Time
+
+  // Russia
+  "MSK": "Europe/Moscow",
+
+  // Mexico
+  "MST": "America/Mexico_City",
+  "CST": "America/Mexico_City",
+
+  // South Africa
+  "SAST": "Africa/Johannesburg",
+
+  // New Zealand
+  "NZST": "Pacific/Auckland",
+  "NZDT": "Pacific/Auckland",
+
+  // Argentina
+  "ART": "America/Argentina/Buenos_Aires",
+
+  // Hawaii
+  "HST": "Pacific/Honolulu",
+};
