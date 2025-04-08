@@ -32,15 +32,17 @@ class WebSocketClient {
     }
   }
 
-  static Future<void> get(String message) async {
+  static Future<String> get(String message) async {
+    print("GET");
     final response = await http.get(
-      Uri.parse('$url?message=$message'),
+      Uri.parse('$url?id=$message'),
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
       print('Response: ${response.body}');
+      return response.body;
     } else {
-      print('Failed to load data');
+      throw Exception('Failed to fetch response: ${response.statusCode}');
     }
   }
 }
