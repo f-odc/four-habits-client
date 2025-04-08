@@ -60,8 +60,9 @@ class Challenge {
     };
   }
 
-  // Convert a String into a Challenge object.
+  // Convert a String into a Challenge object. For SharedPreferences
   static Challenge fromString(String challengeString) {
+    print("Challenge fromString: $challengeString");
     Map<String, dynamic> map = jsonDecode(challengeString);
     List<List<int>> board = List<List<int>>.from(
         map['board'].map((x) => List<int>.from(x.map((x) => x))));
@@ -76,6 +77,28 @@ class Challenge {
       habitName: map['habitName'],
       habitOccurrenceNum: map['habitOccurrence'],
       habitOccurrenceType: map['habitOccurrenceType'],
+    );
+  }
+
+  // Convert a JSON map into a Challenge object. For API Calls
+  static Challenge fromJson(Map<String, dynamic> json) {
+    List<dynamic> rawBoard = jsonDecode(json['board']);
+    List<List<int>> board =
+        rawBoard.map<List<int>>((row) => List<int>.from(row)).toList();
+    bool canPerformMove = json['canPerformMove'] == 'true';
+    String habitOccurrence =
+        json['habitOccurrence'] == null ? '0' : json['habitOccurrence'];
+    return Challenge(
+      id: json['id'],
+      challenger: json['challenger'],
+      challengerID: json['challengerID'],
+      lastMoverID: json['lastMoverID'],
+      board: board,
+      canPerformMove: canPerformMove,
+      habitId: json['habitId'],
+      habitName: json['habitName'],
+      habitOccurrenceNum: habitOccurrence,
+      habitOccurrenceType: json['habitOccurrenceType'],
     );
   }
 

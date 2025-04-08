@@ -84,10 +84,12 @@ class SharedPreferencesService {
     List<String> challengeList =
         _preferences?.getStringList('challenges') ?? [];
     challengeList.add(challenge.toString());
+    print('Challenge list: $challengeList');
     await _preferences?.setStringList('challenges', challengeList);
   }
 
   Future<void> updateChallenge(Challenge challenge) async {
+    print('Updating challenge: $challenge');
     List<String> challengeList =
         _preferences?.getStringList('challenges') ?? [];
     for (var storedChallenge in challengeList) {
@@ -101,12 +103,13 @@ class SharedPreferencesService {
     }
   }
 
-  Challenge? getChallenge(String id) {
+  Challenge? getChallengeFromHabit(String habitID) {
+    print('Getting challenge with id: $habitID');
     List<String> challengeList =
         _preferences?.getStringList('challenges') ?? [];
     for (var challengeString in challengeList) {
       var challenge = Challenge.fromString(challengeString);
-      if (challenge.habitId == id) {
+      if (challenge.habitId == habitID) {
         return challenge;
       }
     }
