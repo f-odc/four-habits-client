@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:four_habits_client/components/connect_four_game.dart';
 import 'package:four_habits_client/model/habit.dart';
 
-import '../../components/connect_four_board.dart';
 import '../../components/custom_card.dart';
 import '../../components/custom_divider.dart';
 import '../../components/habit_tile.dart';
@@ -79,7 +79,6 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
 
     var profile = pref.getProfile();
     // Check if the challenge is active
-    var yourTurn = challenge.lastMoverID != profile.id;
     var correctTime = false;
     DateTime now = DateTime.now();
     if (now.hour == 20 && now.minute == 0) {
@@ -90,10 +89,24 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
       if (_challenge == null) {
         return;
       }
+      var yourTurn = _challenge!.lastMoverID != profile.id;
       if (_challenge!.canPerformMove && (yourTurn || correctTime)) {
         _isActive = true;
       }
     });
+    print("Challenge is Active: $_isActive");
+    print("Challenge completed today: ${completedToday()}");
+  }
+
+  bool completedToday() {
+    DateTime now =
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    if (widget.habit.completedDates.isNotEmpty &&
+        widget.habit.completedDates.first.isAtSameMomentAs(now)) {
+      return true;
+    }
+    print(widget.habit.completedDates.first);
+    return false;
   }
 
   @override
@@ -265,19 +278,13 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                 const CustomDivider(height: 1),
                 // CONNECT FOUR BOARD
                 if (_challenge != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    'Connect Four Challenge',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
-                      fontSize: 20.0,
-                    ),
-                  ),
+                  /* TODO: change here */
                   const SizedBox(height: 8),
                   Stack(
                     children: [
-                      ConnectFourBoard(),
+                      ConnectFourGame(
+                        challenge: _challenge!,
+                      ),
                       if (!_isActive)
                         Container(
                           color: Colors.grey.withOpacity(0.5),

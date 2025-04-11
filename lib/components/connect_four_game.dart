@@ -1,162 +1,98 @@
 import 'package:flutter/material.dart';
-import '../../model/challenge.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../model/move.dart';
-import '../websocket/websocket_client.dart';
+
+import '../model/challenge.dart';
 
 class ConnectFourGame extends StatefulWidget {
-  final Challenge? challenge;
-  final Move? challengeMove;
+  final Challenge challenge;
 
-  const ConnectFourGame(
-      {super.key, required this.challenge, required this.challengeMove});
+  const ConnectFourGame({
+    super.key,
+    required this.challenge,
+  });
 
   @override
-  _ConnectFourGameState createState() => _ConnectFourGameState();
+  State<ConnectFourGame> createState() => _ConnectFourGameState();
 }
 
 class _ConnectFourGameState extends State<ConnectFourGame> {
-  late Challenge _challenge;
-  late Move _challengeMove;
+  static const int rows = 6;
+  static const int columns = 7;
+
+  late List<List<int>> _board;
+  int _currentPlayer = 1; // 1 = Red, 2 = Yellow
+  bool _gameOver = false;
+  String _winnerMessage = '';
 
   @override
   void initState() {
     super.initState();
-    _challenge = widget.challenge!;
-    _challengeMove = widget.challengeMove!;
+    _board = widget.challenge.board;
   }
 
-  void _handleMove(int column) async {
-    // don't allow moves if the challenge is already completed
-    if (!widget.challengeMove!.isMovePossible()) return;
+  void _resetBoard() {
+    _board = List.generate(rows, (_) => List.filled(columns, 0));
+    _currentPlayer = 1;
+    _gameOver = false;
+    _winnerMessage = '';
+  }
 
-    var board = _challenge.board;
-    var currentPlayer = _challenge.challengerID;
+  void _handleMove(int column) {
+    if (_gameOver) return;
 
-    for (int row = 5; row >= 0; row--) {
-      if (board[row][column] == 0) {
+    for (int row = rows - 1; row >= 0; row--) {
+      if (_board[row][column] == 0) {
         setState(() {
-          board[row][column] = currentPlayer;
+          _board[row][column] = _currentPlayer;
+
           if (_checkWin(row, column)) {
-            print('Player $currentPlayer wins!');
+            _gameOver = true;
+            _winnerMessage = 'Player $_currentPlayer wins!';
           } else {
-            currentPlayer = 3 - currentPlayer;
+            _currentPlayer = _currentPlayer == 1 ? 2 : 1;
           }
         });
-        _saveGameState();
-        // TODO: rework notifications
-        /*Future.delayed(Duration(seconds: 30), () {
-          notificationService.showNotification();
-        });*/
         break;
       }
     }
 
-    // Update the challenge
-    await WebSocketClient.post(_challenge.toJson());
-
-    // do no allow another move
-    setState(() {
-      widget.challengeMove!.resetMovePossibility();
-    });
+    // TODO: Update challenge + POST Request
   }
 
-  Future<void> _saveGameState() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> challenges = prefs.getStringList('challenges') ?? [];
+  bool _checkWin(int row, int col) {
+    int player = _board[row][col];
+    if (player == 0) return false;
 
-    // Find the index of the challenge to update
-    int index = challenges.indexWhere((challengeString) {
-      Challenge challenge = Challenge.fromString(challengeString);
-      return challenge.habitId == _challenge.habitId;
-    });
-
-    if (index != -1) {
-      // Update the challenge
-      challenges[index] = _challenge.toString();
-      // Save the updated list back to SharedPreferences
-      prefs.setStringList('challenges', challenges);
+    int countInDirection(int dx, int dy) {
+      int count = 0;
+      int r = row + dy;
+      int c = col + dx;
+      while (r >= 0 &&
+          r < rows &&
+          c >= 0 &&
+          c < columns &&
+          _board[r][c] == player) {
+        count++;
+        r += dy;
+        c += dx;
+      }
+      return count;
     }
 
-    // Handle the move
-    _challengeMove.resetMovePossibility();
-    List<String> moves = prefs.getStringList('moves') ?? [];
+    List<List<int>> directions = [
+      [1, 0], // horizontal
+      [0, 1], // vertical
+      [1, 1], // diagonal down-right
+      [1, -1], // diagonal up-right
+    ];
 
-    // Find the index of the move to update
-    int moveIndex = moves.indexWhere((moveString) {
-      Move move = Move.fromString(moveString);
-      return move.challengeID == _challengeMove.challengeID;
-    });
-
-    if (moveIndex != -1) {
-      // Update the move
-      moves[moveIndex] = _challengeMove.toString();
-      // Save the updated list back to SharedPreferences
-      prefs.setStringList('moves', moves);
+    for (var dir in directions) {
+      int count = 1 +
+          countInDirection(dir[0], dir[1]) +
+          countInDirection(-dir[0], -dir[1]);
+      if (count >= 4) return true;
     }
-  }
 
-  bool _checkWin(int row, int column) {
-    // Check for a win. This can be done in several ways, but one approach is to
-    // check for four in a row horizontally, vertically, and in both diagonals.
-    // This is left as an exercise for the reader.
     return false;
-  }
-
-  Future<void> _resetGame() async {
-    // Reset the game state
-    //var board = List.generate(6, (_) => List.generate(7, (_) => 0));
-
-    // Update the UI
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Column(
-          children: [
-            GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7,
-              ),
-              itemCount: 42,
-              itemBuilder: (context, index) {
-                final row = index ~/ 7;
-                final column = index % 7;
-                return GestureDetector(
-                  onTap: () => _handleMove(column),
-                  child: Container(
-                    margin: const EdgeInsets.all(2.0),
-                    width: 20,
-                    height: 20,
-                    color: _getColor(_challenge.board[row][column]),
-                  ),
-                );
-              },
-            ),
-            ElevatedButton(
-              onPressed: _resetGame,
-              child: const Text('Reset Game'),
-            ),
-          ],
-        ),
-        if (!widget.challengeMove!.isMovePossible())
-          Positioned.fill(
-            child: Container(
-              color: Colors.grey.withOpacity(0.7),
-              child: const Center(
-                child: Text(
-                  'You cannot play currently',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-            ),
-          ),
-      ],
-    );
   }
 
   Color _getColor(int player) {
@@ -168,5 +104,54 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
       default:
         return Colors.white;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        AspectRatio(
+          aspectRatio: 7 / 6,
+          child: GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+            ),
+            itemCount: rows * columns,
+            itemBuilder: (context, index) {
+              final row = index ~/ columns;
+              final col = index % columns;
+              return GestureDetector(
+                onTap: () => _handleMove(col),
+                child: Container(
+                  margin: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _getColor(_board[row][col]),
+                    border: Border.all(color: Colors.black26),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        if (_gameOver)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              _winnerMessage,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _resetBoard();
+            });
+          },
+          child: const Text('Reset Game'),
+        ),
+      ],
+    );
   }
 }
