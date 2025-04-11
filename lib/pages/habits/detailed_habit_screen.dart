@@ -70,6 +70,8 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   Future<void> _loadChallenge(String id) async {
     print("Loading challenge for habit $id");
 
+    // TODO: challenge.canPerformMove is bad -> should be stored for each person
+
     var challenge = await _habitLogic.getChallenge(id);
     print("Challenge: $challenge");
 
@@ -284,17 +286,35 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                     children: [
                       ConnectFourGame(
                         challenge: _challenge!,
+                        onMoveMade: () {
+                          // TODO: make own function
+                          final profile = pref.getProfile();
+                          final correctTime = DateTime.now().hour == 20 &&
+                              DateTime.now().minute == 0;
+                          setState(() {
+                            var yourTurn =
+                                _challenge!.lastMoverID != profile.id;
+                            _isActive = _challenge!.canPerformMove &&
+                                (yourTurn || correctTime);
+                          });
+                        },
                       ),
                       if (!_isActive)
-                        Container(
-                          color: Colors.grey.withOpacity(0.5),
-                          child: Center(
-                            child: Text(
-                              'Inactive',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.grey.withOpacity(0.5),
+                            child: Center(
+                              child: Text(
+                                completedToday()
+                                    ? 'You already completed your habit today!'
+                                    : _challenge!.canPerformMove
+                                        ? 'Wait till your opponent plays or till 20:00'
+                                        : 'Complete your habit to play',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24,
+                                ),
                               ),
                             ),
                           ),
@@ -333,6 +353,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                 direction: DismissDirection.startToEnd,
                                 onDismissed: (direction) {
                                   setState(() {
+                                    // TODO: update challenge if not null and set canPerformMove to true
                                     widget.habit.addCurrentDate();
                                     print(widget.habit.completedDates);
                                     pref.updateHabit(

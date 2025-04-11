@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../model/challenge.dart';
+import '../services/shared_preferences_service.dart';
 
 class ConnectFourGame extends StatefulWidget {
   final Challenge challenge;
+  final VoidCallback? onMoveMade;
 
   const ConnectFourGame({
     super.key,
     required this.challenge,
+    required this.onMoveMade,
   });
 
   @override
@@ -19,14 +22,19 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
   static const int columns = 7;
 
   late List<List<int>> _board;
+  final pref = SharedPreferencesService();
+  String _playerID = "";
   int _currentPlayer = 1; // 1 = Red, 2 = Yellow
   bool _gameOver = false;
   String _winnerMessage = '';
 
   @override
   void initState() {
+    var profile = pref.getProfile();
     super.initState();
     _board = widget.challenge.board;
+    _currentPlayer = widget.challenge.lastMoverID == profile.id ? 2 : 1;
+    _playerID = profile.id;
   }
 
   void _resetBoard() {
@@ -42,20 +50,21 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
     for (int row = rows - 1; row >= 0; row--) {
       if (_board[row][column] == 0) {
         setState(() {
+          // TODO: Update challenge + POST Request
           _board[row][column] = _currentPlayer;
+          widget.challenge.lastMoverID = _playerID;
+          widget.challenge.canPerformMove = false;
 
           if (_checkWin(row, column)) {
             _gameOver = true;
             _winnerMessage = 'Player $_currentPlayer wins!';
-          } else {
-            _currentPlayer = _currentPlayer == 1 ? 2 : 1;
           }
+          // Notify parent
+          widget.onMoveMade?.call();
         });
         break;
       }
     }
-
-    // TODO: Update challenge + POST Request
   }
 
   bool _checkWin(int row, int col) {
