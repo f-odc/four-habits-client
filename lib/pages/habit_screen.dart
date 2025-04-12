@@ -69,6 +69,7 @@ class _HabitScreenState extends State<HabitScreen> {
   }
 
   Future<void> _loadChallenge(String id) async {
+    // TODO: use own function for this
     print('User entered ID: $id');
     final String response = await WebSocketClient.get(id);
     final Map<String, dynamic> json = jsonDecode(response);
@@ -108,6 +109,7 @@ class _HabitScreenState extends State<HabitScreen> {
       pref.addHabit(newHabit);
       _loadHabit();
       pref.addChallenge(newChallenge);
+      pref.setChallengeBool(newChallenge.id, false);
     });
   }
 

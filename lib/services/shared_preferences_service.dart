@@ -80,7 +80,24 @@ class SharedPreferencesService {
     return habits;
   }
 
+  // TODO: store for each challenge canPerformMove
+  // Set a boolean value
+  Future<void> setChallengeBool(String key, bool value) async {
+    print("SharedPreferences: setChallengeBool: $key = $value");
+    await _preferences?.setBool(key, value);
+  }
+
+  // Get a boolean value
+  Future<bool> getChallengeBool(String key) async {
+    print("SharedPreferences: getChallengeBool: ${_preferences?.getBool(key)}");
+    return _preferences?.getBool(key) ?? false;
+  }
+
   Future<void> addChallenge(Challenge challenge) async {
+    // delete challenge list
+    //_preferences?.remove('challenges');
+
+    print('Adding challenge: $challenge');
     List<String> challengeList =
         _preferences?.getStringList('challenges') ?? [];
     challengeList.add(challenge.toString());

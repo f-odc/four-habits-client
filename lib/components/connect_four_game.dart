@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../model/challenge.dart';
 import '../services/shared_preferences_service.dart';
+import '../websocket/websocket_client.dart';
 
 class ConnectFourGame extends StatefulWidget {
   final Challenge challenge;
@@ -44,22 +45,30 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
     _winnerMessage = '';
   }
 
-  void _handleMove(int column) {
+  void _handleMove(int column) async {
     if (_gameOver) return;
 
     for (int row = rows - 1; row >= 0; row--) {
       if (_board[row][column] == 0) {
-        setState(() {
-          // TODO: Update challenge + POST Request
-          _board[row][column] = _currentPlayer;
-          widget.challenge.lastMoverID = _playerID;
-          widget.challenge.canPerformMove = false;
+        // Update the challenge data first
+        _board[row][column] = _currentPlayer;
+        widget.challenge.lastMoverID = _playerID;
+        widget.challenge.board = _board;
+        pref.setChallengeBool(widget.challenge.id, false);
 
+        // Save locally
+        pref.updateChallenge(widget.challenge);
+
+        // Post to server — OUTSIDE setState
+        await WebSocketClient.post(widget.challenge.toJson());
+
+        // Now update the UI
+        setState(() {
           if (_checkWin(row, column)) {
             _gameOver = true;
             _winnerMessage = 'Player $_currentPlayer wins!';
           }
-          // Notify parent
+
           widget.onMoveMade?.call();
         });
         break;

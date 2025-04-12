@@ -10,7 +10,6 @@ import '../../services/shared_preferences_service.dart';
 import 'detailed_habit_logic.dart';
 import 'edit_habit_screen.dart';
 
-// TODO: check if habit can be made final
 // ignore: must_be_immutable
 class DetailedHabitScreen extends StatefulWidget {
   Habit habit;
@@ -31,6 +30,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   final pref = SharedPreferencesService();
   bool _isDismissed = false;
   Challenge? _challenge = null;
+  bool _canPerformMove = false;
   bool _isActive = false;
 
   @override
@@ -70,7 +70,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   Future<void> _loadChallenge(String id) async {
     print("Loading challenge for habit $id");
 
-    // TODO: challenge.canPerformMove is bad -> should be stored for each person
+    // TODO: challenge.canPerformMove is bad -> should be stored for each person -> sharedPref
 
     var challenge = await _habitLogic.getChallenge(id);
     print("Challenge: $challenge");
@@ -86,16 +86,22 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
     if (now.hour == 20 && now.minute == 0) {
       correctTime = true;
     }
+
+    bool canPerform = await pref.getChallengeBool(challenge.id);
+
     setState(() {
       _challenge = challenge;
       if (_challenge == null) {
         return;
       }
+      // check if the habit was completed and no challenge move was performed
+      _canPerformMove = canPerform;
       var yourTurn = _challenge!.lastMoverID != profile.id;
-      if (_challenge!.canPerformMove && (yourTurn || correctTime)) {
+      if (_canPerformMove && (yourTurn || correctTime)) {
         _isActive = true;
       }
     });
+    print("Can perform move: $_canPerformMove");
     print("Challenge is Active: $_isActive");
     print("Challenge completed today: ${completedToday()}");
   }
@@ -107,7 +113,6 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
         widget.habit.completedDates.first.isAtSameMomentAs(now)) {
       return true;
     }
-    print(widget.habit.completedDates.first);
     return false;
   }
 
@@ -294,8 +299,8 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                           setState(() {
                             var yourTurn =
                                 _challenge!.lastMoverID != profile.id;
-                            _isActive = _challenge!.canPerformMove &&
-                                (yourTurn || correctTime);
+                            _isActive =
+                                _canPerformMove && (yourTurn || correctTime);
                           });
                         },
                       ),
@@ -305,9 +310,9 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                             color: Colors.grey.withOpacity(0.5),
                             child: Center(
                               child: Text(
-                                completedToday()
+                                completedToday() && !_canPerformMove
                                     ? 'You already completed your habit today!'
-                                    : _challenge!.canPerformMove
+                                    : _canPerformMove
                                         ? 'Wait till your opponent plays or till 20:00'
                                         : 'Complete your habit to play',
                                 style: TextStyle(
@@ -352,6 +357,13 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                 key: const Key('add-date-swipe'),
                                 direction: DismissDirection.startToEnd,
                                 onDismissed: (direction) {
+                                  // call own function -> check
+                                  final profile = pref.getProfile();
+                                  final correctTime =
+                                      DateTime.now().hour == 20 &&
+                                          DateTime.now().minute == 0;
+                                  final yourTurn =
+                                      _challenge!.lastMoverID != profile.id;
                                   setState(() {
                                     // TODO: update challenge if not null and set canPerformMove to true
                                     widget.habit.addCurrentDate();
@@ -361,6 +373,17 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                         widget
                                             .index); // Update habit in shared preferences
                                     _isDismissed = true;
+
+                                    // TODO: only set canPerformMove to true if streak increases
+                                    // Set the shared preference flag
+                                    pref.setChallengeBool(_challenge!.id, true);
+
+                                    // Update local flag
+                                    _canPerformMove = true;
+
+                                    // ❗ Recalculate active status immediately
+                                    _isActive = _canPerformMove &&
+                                        (yourTurn || correctTime);
                                   });
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
