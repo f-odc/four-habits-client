@@ -83,9 +83,10 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
     // Check if the challenge is active
     var correctTime = false;
     DateTime now = DateTime.now();
-    if (now.hour == 20 && now.minute == 0) {
+    if (now.hour >= 20 && now.minute > 0) {
       correctTime = true;
     }
+    print("is correct time: $correctTime");
 
     bool canPerform = await pref.getChallengeBool(challenge.id);
 
@@ -366,7 +367,10 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                       _challenge!.lastMoverID != profile.id;
                                   setState(() {
                                     // TODO: update challenge if not null and set canPerformMove to true
+                                    var currentStreak =
+                                        widget.habit.getStreak();
                                     widget.habit.addCurrentDate();
+                                    var newStreak = widget.habit.getStreak();
                                     print(widget.habit.completedDates);
                                     pref.updateHabit(
                                         widget.habit,
@@ -374,12 +378,12 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                             .index); // Update habit in shared preferences
                                     _isDismissed = true;
 
-                                    // TODO: only set canPerformMove to true if streak increases
-                                    // Set the shared preference flag
-                                    pref.setChallengeBool(_challenge!.id, true);
-
-                                    // Update local flag
-                                    _canPerformMove = true;
+                                    // TODO: Set canPerformMove to true if streak increases
+                                    if (newStreak > currentStreak) {
+                                      _canPerformMove = true; // update local
+                                      pref.setChallengeBool(_challenge!.id,
+                                          true); // update shared pref
+                                    }
 
                                     // ❗ Recalculate active status immediately
                                     _isActive = _canPerformMove &&

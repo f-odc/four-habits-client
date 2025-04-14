@@ -34,7 +34,9 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
     var profile = pref.getProfile();
     super.initState();
     _board = widget.challenge.board;
-    _currentPlayer = widget.challenge.lastMoverID == profile.id ? 2 : 1;
+    _currentPlayer = widget.challenge.challengerID == profile.id
+        ? 1
+        : 2; // currentPlayer = 1 if challenger, else 2
     _playerID = profile.id;
   }
 
