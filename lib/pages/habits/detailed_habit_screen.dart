@@ -70,8 +70,6 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
   Future<void> _loadChallenge(String id) async {
     print("Loading challenge for habit $id");
 
-    // TODO: challenge.canPerformMove is bad -> should be stored for each person -> sharedPref
-
     var challenge = await _habitLogic.getChallenge(id);
     print("Challenge: $challenge");
 
@@ -311,6 +309,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                             color: Colors.grey.withOpacity(0.5),
                             child: Center(
                               child: Text(
+                                // TODO: fix text and make it prettier
                                 completedToday() && !_canPerformMove
                                     ? 'You already completed your habit today!'
                                     : _canPerformMove
@@ -328,7 +327,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const CustomDivider(height: 1),
+                  const CustomDivider(height: 1), // TODO: maybe delete
                 ],
                 // COMPLETE HABIT
                 Expanded(
@@ -367,6 +366,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                       _challenge!.lastMoverID != profile.id;
                                   setState(() {
                                     // TODO: update challenge if not null and set canPerformMove to true
+                                    // TODO: makes this a own function
                                     var currentStreak =
                                         widget.habit.getStreak();
                                     widget.habit.addCurrentDate();
@@ -378,7 +378,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                             .index); // Update habit in shared preferences
                                     _isDismissed = true;
 
-                                    // TODO: Set canPerformMove to true if streak increases
+                                    // Set canPerformMove to true if streak increases
                                     if (newStreak > currentStreak) {
                                       _canPerformMove = true; // update local
                                       pref.setChallengeBool(_challenge!.id,

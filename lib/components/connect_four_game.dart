@@ -38,6 +38,23 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
         ? 1
         : 2; // currentPlayer = 1 if challenger, else 2
     _playerID = profile.id;
+
+    // check if game is over
+    // Check for a winner
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < columns; col++) {
+        if (_board[row][col] != 0 && _checkWin(row, col)) {
+          _gameOver = true;
+          _winnerMessage = 'Player ${_board[row][col]} wins!';
+          return;
+        }
+      }
+    }
+    // Check for draw
+    if (_isBoardFull()) {
+      _gameOver = true;
+      _winnerMessage = 'It\'s a draw!';
+    }
   }
 
   void _resetBoard() {
@@ -45,6 +62,8 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
     _currentPlayer = 1;
     _gameOver = false;
     _winnerMessage = '';
+    // update challenge data
+    widget.challenge.challengerID = _playerID;
   }
 
   void _handleMove(int column) async {
@@ -69,6 +88,9 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
           if (_checkWin(row, column)) {
             _gameOver = true;
             _winnerMessage = 'Player $_currentPlayer wins!';
+          } else if (_isBoardFull() && !_gameOver) {
+            _gameOver = true;
+            _winnerMessage = 'It\'s a draw!';
           }
 
           widget.onMoveMade?.call();
@@ -115,12 +137,23 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
     return false;
   }
 
+  bool _isBoardFull() {
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < columns; col++) {
+        if (_board[row][col] == 0) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   Color _getColor(int player) {
     switch (player) {
       case 1:
-        return Colors.red;
+        return Colors.orange;
       case 2:
-        return Colors.yellow;
+        return Colors.black54;
       default:
         return Colors.white;
     }
@@ -130,6 +163,39 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        /* "YOUR COLOR" WIDGET*/
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Your Color: ',
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _getColor(_currentPlayer),
+                  border: Border.all(color: Colors.black26),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                _currentPlayer == 1 ? 'Orange' : 'Black',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: _getColor(_currentPlayer),
+                ),
+              ),
+            ],
+          ),
+        ),
+        /* BOARD */
         AspectRatio(
           aspectRatio: 7 / 6,
           child: GridView.builder(
@@ -157,20 +223,39 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
         ),
         if (_gameOver)
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              _winnerMessage,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.all(2.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _winnerMessage,
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: _getColor(widget.challenge.lastMoverID == _playerID
+                          ? _currentPlayer
+                          : (_currentPlayer == 1 ? 2 : 1))),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange[100],
+                    foregroundColor: Colors.orange, // Text color
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _resetBoard();
+                    });
+                  },
+                  child: const Text('Reset Game',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+              ],
             ),
           ),
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              _resetBoard();
-            });
-          },
-          child: const Text('Reset Game'),
-        ),
       ],
     );
   }
