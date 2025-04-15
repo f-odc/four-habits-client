@@ -308,17 +308,20 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                           child: Container(
                             color: Colors.grey.withOpacity(0.5),
                             child: Center(
-                              child: Text(
-                                // TODO: fix text and make it prettier
-                                completedToday() && !_canPerformMove
-                                    ? 'You already completed your habit today!'
-                                    : _canPerformMove
-                                        ? 'Wait till your opponent plays or till 20:00'
-                                        : 'Complete your habit to play',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 24,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Text(
+                                  _canPerformMove
+                                      ? 'Waiting for your opponent or until 20:00 to play.'
+                                      : completedToday()
+                                          ? 'You’ve already completed your Habit today. Great job!'
+                                          : 'Complete your Habit to make a move.',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 26,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                             ),
