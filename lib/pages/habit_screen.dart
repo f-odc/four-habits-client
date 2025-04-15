@@ -216,7 +216,6 @@ class _HabitScreenState extends State<HabitScreen> {
                         ),
                       ),
                       actions: <Widget>[
-                        // TODO: center the buttons and make them orange
                         TextButton(
                           child: const Text(
                             'Cancel',
@@ -243,6 +242,13 @@ class _HabitScreenState extends State<HabitScreen> {
                             // Do something with the ID, like print it or pass to backend
 
                             Navigator.of(context).pop(); // Close the dialog
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                    'Challenge added if ID is correct! Good Luck!'),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
                           },
                         ),
                       ],
