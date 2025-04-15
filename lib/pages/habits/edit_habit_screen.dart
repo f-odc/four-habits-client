@@ -142,7 +142,7 @@ class _EditHabitScreen extends State<EditHabitScreen> {
                     },
                     onChanged: (value) {
                       setState(() {
-                        widget.habit.occurrenceNum = value;
+                        //widget.habit.occurrenceNum = value;
                       });
                     },
                   ),
