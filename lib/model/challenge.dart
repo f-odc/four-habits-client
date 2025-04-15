@@ -87,7 +87,7 @@ class Challenge {
         rawBoard.map<List<int>>((row) => List<int>.from(row)).toList();
     bool canPerformMove = json['canPerformMove'] == 'true';
     String habitOccurrence =
-        json['habitOccurrence'] == null ? '0' : json['habitOccurrence'];
+        json['habitOccurrenceNum'] == null ? '0' : json['habitOccurrenceNum'];
     return Challenge(
       id: json['id'],
       challenger: json['challenger'],

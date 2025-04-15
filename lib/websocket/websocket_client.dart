@@ -20,7 +20,8 @@ class WebSocketClient {
       ..fields['canPerformMove'] = data['canPerformMove'].toString()
       ..fields['habitId'] = data['habitId']
       ..fields['habitName'] = data['habitName']
-      ..fields['habitOccurrence'] = data['habitOccurrence']
+      ..fields['habitOccurrenceNum'] = data[
+          'habitOccurrence'] // TODO: attention to the name, Make it consistent
       ..fields['habitOccurrenceType'] = data['habitOccurrenceType'];
 
     var response = await request.send();
