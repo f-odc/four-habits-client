@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class WebSocketClient {
-  static String url = 'http://192.168.0.152:8080';
+  static String url = 'https://4habits.lab64.eu';
   static String token = '187';
 
   WebSocketClient();
