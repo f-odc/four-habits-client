@@ -201,7 +201,13 @@ class _HabitScreenState extends State<HabitScreen> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: const Text('Add Challenge ID'),
+                      title: const Text(
+                        'Add Challenge ID',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
                       content: TextField(
                         controller: _idController,
                         keyboardType: TextInputType.number,
@@ -212,13 +218,25 @@ class _HabitScreenState extends State<HabitScreen> {
                       actions: <Widget>[
                         // TODO: center the buttons and make them orange
                         TextButton(
-                          child: Text('Cancel'),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           onPressed: () {
                             Navigator.of(context).pop(); // Close the dialog
                           },
                         ),
                         ElevatedButton(
-                          child: Text('OK'),
+                          child: const Text(
+                            'OK',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           onPressed: () {
                             String enteredID = _idController.text;
                             _loadChallenge(enteredID);

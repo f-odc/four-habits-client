@@ -141,36 +141,31 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
             ),
           ),
           actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  child: const Text(
-                    "Cancel",
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+            TextButton(
+              child: const Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontWeight: FontWeight.bold,
                 ),
-                TextButton(
-                  child: const Text(
-                    "Delete",
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  onPressed: () {
-                    _habitLogic.deleteHabit(widget.index);
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text(
+                "Delete",
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
+              onPressed: () {
+                _habitLogic.deleteHabit(widget.index);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
             ),
           ],
         );
