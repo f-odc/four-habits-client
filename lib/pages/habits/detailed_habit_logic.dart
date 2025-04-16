@@ -51,8 +51,7 @@ class DetailedHabitLogic {
 
     _prefsService.addChallenge(challenge);
 
-    Share.share(
-        'Check out this habit I created with Four Habits: ${challenge.id}');
+    Share.share('${challenge.id}');
 
     await WebSocketClient.post(challenge.toJson());
   }
