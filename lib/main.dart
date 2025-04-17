@@ -115,14 +115,14 @@ Map<String, String> timeZoneMap = {
   "JST": "Asia/Tokyo",
 
   // China
-  "CST": "Asia/Shanghai", // Be careful, "CST" is also used for US Central Time
+  /*"CST": "Asia/Shanghai",*/ // Be careful, "CST" is also used for US Central Time
 
   // Russia
   "MSK": "Europe/Moscow",
 
   // Mexico
-  "MST": "America/Mexico_City",
-  "CST": "America/Mexico_City",
+  /*"MST": "America/Mexico_City",
+  "CST": "America/Mexico_City",*/
 
   // South Africa
   "SAST": "Africa/Johannesburg",
