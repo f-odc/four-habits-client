@@ -255,6 +255,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                       trailingText: widget.habit.highestStreak.toString(),
                     ),
                     const SizedBox(height: 4),
+                    // SHARE HABIT
                     // TODO: Make CustomCard clickable
                     Card(
                       color: Colors.orange[100],
@@ -360,11 +361,15 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                   final correctTime =
                                       DateTime.now().hour == 20 &&
                                           DateTime.now().minute == 0;
-                                  final yourTurn =
-                                      _challenge!.lastMoverID != profile.id;
+
+                                  final yourTurn = _challenge == null
+                                      ? false
+                                      : _challenge!.lastMoverID !=
+                                          profile
+                                              .id; // if no challenge then false else calculate yourTurn
                                   setState(() {
-                                    // TODO: update challenge if not null and set canPerformMove to true
                                     // TODO: makes this a own function
+                                    // Habit Update
                                     var currentStreak =
                                         widget.habit.getStreak();
                                     widget.habit.addCurrentDate();
@@ -376,16 +381,18 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                                             .index); // Update habit in shared preferences
                                     _isDismissed = true;
 
-                                    // Set canPerformMove to true if streak increases
-                                    if (newStreak > currentStreak) {
-                                      _canPerformMove = true; // update local
-                                      pref.setChallengeBool(_challenge!.id,
-                                          true); // update shared pref
+                                    // Challenge Update | If not null
+                                    if (_challenge != null) {
+                                      // Set canPerformMove to true if streak increases
+                                      if (newStreak > currentStreak) {
+                                        _canPerformMove = true; // update local
+                                        pref.setChallengeBool(_challenge!.id,
+                                            true); // update shared pref
+                                      }
+                                      // Recalculate active status immediately
+                                      _isActive = _canPerformMove &&
+                                          (yourTurn || correctTime);
                                     }
-
-                                    // ❗ Recalculate active status immediately
-                                    _isActive = _canPerformMove &&
-                                        (yourTurn || correctTime);
                                   });
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
