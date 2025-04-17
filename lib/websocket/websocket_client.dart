@@ -1,8 +1,9 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class WebSocketClient {
-  static String url = 'http://192.168.0.152:8080';
+  static String url = 'https://4habits.lab64.eu';
   static String token = '187';
 
   WebSocketClient();
@@ -12,12 +13,16 @@ class WebSocketClient {
     var request = http.MultipartRequest('POST', Uri.parse(url))
       ..headers['Authorization'] = 'Bearer $token'
       ..fields['id'] = data['id']
-      ..fields['name'] = data['name']
-      ..fields['occurrence'] = data['occurrence']
-      ..fields['num'] = data['num']
+      ..fields['challenger'] = data['challenger']
+      ..fields['challengerID'] = data['challengerID']
+      ..fields['lastMoverID'] = data['lastMoverID']
       ..fields['board'] = jsonEncode(data['board'])
-      ..fields['challenger'] = data['challenger'].toString()
-      ..fields['score'] = data['score'].toString();
+      ..fields['canPerformMove'] = data['canPerformMove'].toString()
+      ..fields['habitId'] = data['habitId']
+      ..fields['habitName'] = data['habitName']
+      ..fields['habitOccurrenceNum'] = data[
+          'habitOccurrence'] // TODO: attention to the name, Make it consistent
+      ..fields['habitOccurrenceType'] = data['habitOccurrenceType'];
 
     var response = await request.send();
 
@@ -28,15 +33,17 @@ class WebSocketClient {
     }
   }
 
-  static Future<void> get(String message) async {
+  static Future<String> get(String message) async {
+    print("GET");
     final response = await http.get(
-      Uri.parse('$url?message=$message'),
+      Uri.parse('$url?id=$message'),
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
       print('Response: ${response.body}');
+      return response.body;
     } else {
-      print('Failed to load data');
+      throw Exception('Failed to fetch response: ${response.statusCode}');
     }
   }
 }

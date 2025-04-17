@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:four_habits_client/components/custom_card.dart';
 import 'package:four_habits_client/components/custom_divider.dart';
 import 'package:four_habits_client/components/habit_tile.dart';
 import 'package:four_habits_client/pages/notification_settings_screen.dart';
 
+import '../model/challenge.dart';
 import '../model/habit.dart';
+import '../model/profile.dart';
 import '../services/shared_preferences_service.dart';
+import '../websocket/websocket_client.dart';
 import 'habits/create_habit_screen.dart';
 import 'habits/detailed_habit_screen.dart';
 
@@ -18,18 +23,19 @@ class HabitScreen extends StatefulWidget {
 
 class _HabitScreenState extends State<HabitScreen> {
   List<Habit> _habits = [];
-  String _username = '';
+  Profile _profile = Profile(id: '', name: '');
   final pref = SharedPreferencesService();
   DateTime now = DateTime(DateTime.now().year, DateTime.now().month,
       DateTime.now().day); // Date without time
   late bool _notificationEnabled = false;
   late TimeOfDay _notificationTime;
+  final TextEditingController _idController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadHabit();
-    _loadUsername();
+    _loadProfile();
     _loadNotificationSettings();
   }
 
@@ -47,9 +53,9 @@ class _HabitScreenState extends State<HabitScreen> {
     });
   }
 
-  Future<void> _loadUsername() async {
+  Future<void> _loadProfile() async {
     setState(() {
-      _username = pref.getUsername() ?? 'User';
+      _profile = pref.getProfile();
     });
   }
 
@@ -59,6 +65,51 @@ class _HabitScreenState extends State<HabitScreen> {
     setState(() {
       _notificationEnabled = notificationStatus;
       _notificationTime = notificationTime;
+    });
+  }
+
+  Future<void> _loadChallenge(String id) async {
+    // TODO: use own function for this
+    print('User entered ID: $id');
+    final String response = await WebSocketClient.get(id);
+    final Map<String, dynamic> json = jsonDecode(response);
+    if (json.containsKey("error")) {
+      print("Error: ${json["error"]}");
+      return null;
+    }
+
+    Challenge challenge = Challenge.fromJson(json);
+    print("Retrieved challenge: $challenge");
+
+    // TODO: create habit from challenge
+    Habit newHabit = Habit(
+      id: challenge.habitId,
+      name: challenge.habitName,
+      occurrenceType: challenge.habitOccurrenceType,
+      occurrenceNum: challenge.habitOccurrenceNum,
+      completedDates: [],
+      highestStreak: 0,
+    );
+    // TODO: create own challenge from challenge
+    Challenge newChallenge = Challenge(
+      id: challenge.id,
+      challenger: challenge.challenger,
+      challengerID: challenge.challengerID,
+      lastMoverID: challenge.lastMoverID,
+      board: challenge.board,
+      canPerformMove: true,
+      habitId: newHabit.id,
+      habitName: newHabit.name,
+      habitOccurrenceType: newHabit.occurrenceType,
+      habitOccurrenceNum: newHabit.occurrenceNum,
+    );
+
+    setState(() {
+      //_habits.add(new_Habit);
+      pref.addHabit(newHabit);
+      _loadHabit();
+      pref.addChallenge(newChallenge);
+      pref.setChallengeBool(newChallenge.id, false);
     });
   }
 
@@ -101,7 +152,7 @@ class _HabitScreenState extends State<HabitScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome $_username',
+                  'Welcome ${_profile.name}',
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
@@ -133,8 +184,7 @@ class _HabitScreenState extends State<HabitScreen> {
               }
             },
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CustomCard(
                 icon: Icons.add,
                 iconColor: Colors.orange,
@@ -144,7 +194,79 @@ class _HabitScreenState extends State<HabitScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          // JOIN CHALLENGE CARD
+          GestureDetector(
+            onTap: () async {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text(
+                        'Add Challenge ID',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      content: TextField(
+                        controller: _idController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Enter ID here',
+                        ),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                        ElevatedButton(
+                          child: const Text(
+                            'OK',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () {
+                            String enteredID = _idController.text;
+                            _loadChallenge(enteredID);
+                            // Do something with the ID, like print it or pass to backend
+
+                            Navigator.of(context).pop(); // Close the dialog
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                    'Challenge added if ID is correct! Good Luck!'),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: CustomCard(
+                icon: Icons.add,
+                iconColor: Colors.orange,
+                cardColor: Colors.orange[100],
+                cardText: 'Join Challenge',
+                cardTextColor: Colors.orange,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           const CustomDivider(height: 1), // Top divider
           const SizedBox(height: 12),
           // HABIT LIST

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:four_habits_client/model/habit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../model/challenge.dart';
+import '../model/profile.dart';
+
 class SharedPreferencesService {
   static final SharedPreferencesService _instance =
       SharedPreferencesService._internal();
@@ -26,13 +29,13 @@ class SharedPreferencesService {
     return _preferences?.getBool('firstVisit');
   }
 
-  // Set and get username
-  Future<void> setUsername(String value) async {
-    await _preferences?.setString('username', value);
+  Future<void> setProfile(Profile profile) async {
+    await _preferences?.setString('profile', profile.toString());
   }
 
-  String? getUsername() {
-    return _preferences?.getString('username');
+  Profile getProfile() {
+    String? profileString = _preferences?.getString('profile');
+    return Profile.fromString(profileString ?? '');
   }
 
   // Set habit list
@@ -75,6 +78,59 @@ class SharedPreferencesService {
       habits.add(Habit.fromString(habitString));
     }
     return habits;
+  }
+
+  // TODO: store for each challenge canPerformMove
+  // Set a boolean value
+  Future<void> setChallengeBool(String key, bool value) async {
+    print("SharedPreferences: setChallengeBool: $key = $value");
+    await _preferences?.setBool(key, value);
+  }
+
+  // Get a boolean value
+  Future<bool> getChallengeBool(String key) async {
+    print("SharedPreferences: getChallengeBool: ${_preferences?.getBool(key)}");
+    return _preferences?.getBool(key) ?? false;
+  }
+
+  Future<void> addChallenge(Challenge challenge) async {
+    // delete challenge list
+    //_preferences?.remove('challenges');
+
+    print('Adding challenge: $challenge');
+    List<String> challengeList =
+        _preferences?.getStringList('challenges') ?? [];
+    challengeList.add(challenge.toString());
+    print('Challenge list: $challengeList');
+    await _preferences?.setStringList('challenges', challengeList);
+  }
+
+  Future<void> updateChallenge(Challenge challenge) async {
+    print('Updating challenge: $challenge');
+    List<String> challengeList =
+        _preferences?.getStringList('challenges') ?? [];
+    for (var storedChallenge in challengeList) {
+      var storedChallengeObject = Challenge.fromString(storedChallenge);
+      if (storedChallengeObject.id == challenge.id) {
+        challengeList.remove(storedChallenge);
+        challengeList.add(challenge.toString());
+        await _preferences?.setStringList('challenges', challengeList);
+        return;
+      }
+    }
+  }
+
+  Challenge? getChallengeFromHabit(String habitID) {
+    print('Getting challenge with id: $habitID');
+    List<String> challengeList =
+        _preferences?.getStringList('challenges') ?? [];
+    for (var challengeString in challengeList) {
+      var challenge = Challenge.fromString(challengeString);
+      if (challenge.habitId == habitID) {
+        return challenge;
+      }
+    }
+    return null;
   }
 
   void storeNotificationSettings(

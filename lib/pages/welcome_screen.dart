@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
+import '../model/profile.dart';
 import '../services/shared_preferences_service.dart';
 import 'habit_screen.dart';
 
@@ -65,7 +67,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           const Icon(Icons.arrow_forward, color: Colors.orange),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          await prefs.setUsername(_usernameController.text);
+                          // store profile
+                          var uuid = Uuid();
+                          Profile profile = Profile(
+                            id: uuid.v4(),
+                            name: _usernameController.text,
+                          );
+                          await prefs.setProfile(profile);
                           await prefs.setFirstVisit(false);
                           Navigator.pushReplacement(
                             context,
