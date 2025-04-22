@@ -198,6 +198,7 @@ class _HabitScreenState extends State<HabitScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.orange,
+                          fontSize: Style.cardTextSize,
                         ),
                       ),
                       content: TextField(
