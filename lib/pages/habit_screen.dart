@@ -5,6 +5,7 @@ import 'package:four_habits_client/components/custom_card.dart';
 import 'package:four_habits_client/components/custom_divider.dart';
 import 'package:four_habits_client/components/habit_tile.dart';
 import 'package:four_habits_client/pages/notification_settings_screen.dart';
+import 'package:four_habits_client/styles.dart';
 
 import '../model/challenge.dart';
 import '../model/habit.dart';
@@ -105,7 +106,6 @@ class _HabitScreenState extends State<HabitScreen> {
     );
 
     setState(() {
-      //_habits.add(new_Habit);
       pref.addHabit(newHabit);
       _loadHabit();
       pref.addChallenge(newChallenge);
@@ -123,7 +123,7 @@ class _HabitScreenState extends State<HabitScreen> {
                 _notificationEnabled
                     ? Icons.notifications
                     : Icons.notifications_none_outlined,
-                color: Colors.orange),
+                color: Style.orange),
             onPressed: () async {
               final result = await Navigator.push(
                 context,
@@ -153,19 +153,11 @@ class _HabitScreenState extends State<HabitScreen> {
               children: [
                 Text(
                   'Welcome ${_profile.name}',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange,
-                  ),
+                  style: Style.titleTextStyle,
                 ),
                 const Text(
                   '“Great habits are the foundation of great achievements.”',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.orange,
-                  ),
+                  style: Style.subtitleTextStyle,
                 ),
               ],
             ),
@@ -187,10 +179,10 @@ class _HabitScreenState extends State<HabitScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CustomCard(
                 icon: Icons.add,
-                iconColor: Colors.orange,
-                cardColor: Colors.orange[100],
+                iconColor: Style.orange,
+                cardColor: Style.cardColorOrange,
                 cardText: 'Create New Habit',
-                cardTextColor: Colors.orange,
+                cardTextColor: Style.textColor,
               ),
             ),
           ),
@@ -211,7 +203,7 @@ class _HabitScreenState extends State<HabitScreen> {
                       content: TextField(
                         controller: _idController,
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Enter ID here',
                         ),
                       ),
@@ -239,14 +231,12 @@ class _HabitScreenState extends State<HabitScreen> {
                           onPressed: () {
                             String enteredID = _idController.text;
                             _loadChallenge(enteredID);
-                            // Do something with the ID, like print it or pass to backend
-
-                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pop();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: const Text(
                                     'Challenge added if ID is correct! Good Luck!'),
-                                backgroundColor: Colors.orange,
+                                backgroundColor: Style.orange,
                               ),
                             );
                           },
@@ -259,10 +249,10 @@ class _HabitScreenState extends State<HabitScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CustomCard(
                 icon: Icons.add,
-                iconColor: Colors.orange,
-                cardColor: Colors.orange[100],
+                iconColor: Style.orange,
+                cardColor: Style.cardColorOrange,
                 cardText: 'Join Challenge',
-                cardTextColor: Colors.orange,
+                cardTextColor: Style.textColor,
               ),
             ),
           ),
