@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:four_habits_client/components/connect_four_game.dart';
 import 'package:four_habits_client/model/habit.dart';
+import 'package:four_habits_client/styles.dart';
 
 import '../../components/custom_card.dart';
 import '../../components/custom_divider.dart';
@@ -258,15 +259,15 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                     // SHARE HABIT
                     // TODO: Make CustomCard clickable
                     Card(
-                      color: Colors.orange[100],
+                      color: Style.cardColorOrange,
                       child: ListTile(
                         leading: const Icon(Icons.share, color: Colors.orange),
                         title: const Text(
                           'Challenge Your Friends!',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange,
-                            fontSize: 20.0,
+                            color: Style.orange,
+                            fontSize: Style.cardTextSize,
                           ),
                         ),
                         onTap: () {

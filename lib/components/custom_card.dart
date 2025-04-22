@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:four_habits_client/styles.dart';
 
 class CustomCard extends StatelessWidget {
   final IconData icon;
@@ -29,13 +30,16 @@ class CustomCard extends StatelessWidget {
     return Card(
       color: cardColor,
       child: ListTile(
-        leading: Icon(icon, color: iconColor),
+        leading: Icon(
+          icon,
+          color: iconColor,
+        ),
         title: Text(
           textAlign: centerText! ? TextAlign.center : TextAlign.start,
           cardText,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 20.0,
+            fontSize: Style.cardTextSize,
             color: cardTextColor,
           ),
         ),
@@ -49,7 +53,7 @@ class CustomCard extends StatelessWidget {
                       trailingText!,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
+                        fontSize: Style.cardTextSize,
                       ),
                     ),
                   if (trailingIcon != null)

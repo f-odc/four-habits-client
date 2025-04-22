@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:four_habits_client/styles.dart';
 
 class HabitTile extends StatelessWidget {
   final String habitName;
@@ -22,24 +23,21 @@ class HabitTile extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
         side: highlight
-            ? BorderSide(color: Colors.orange[100]!, width: 3.0)
+            ? BorderSide(color: Style.cardColorOrange, width: 3.0)
             : BorderSide.none,
       ),
       child: ListTile(
         leading: const Icon(Icons.check_circle_outline),
         title: Text(
-          'Habit: $habitName',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20.0,
-          ),
+          '$habitName',
+          style: Style.cardTextStyle,
         ),
         subtitle: Text(
           occurrenceType == 'Daily'
               ? 'Occurrence: $occurrenceType'
               : 'Occurrence: $occurrenceType - $occurrenceNum',
           style: TextStyle(
-            fontSize: 16.0,
+            fontSize: Style.cardSubTextSize,
             color: Colors.grey[600],
           ),
         ),
@@ -50,7 +48,7 @@ class HabitTile extends StatelessWidget {
               '$streak',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 20.0,
+                fontSize: Style.cardTextSize,
               ),
             ),
             const Icon(Icons.local_fire_department, color: Colors.orange),

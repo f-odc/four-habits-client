@@ -3,6 +3,7 @@ import 'package:four_habits_client/components/custom_app_bar.dart';
 import 'package:four_habits_client/components/custom_card.dart';
 import 'package:four_habits_client/components/custom_divider.dart';
 import 'package:four_habits_client/components/habit_tile.dart';
+import 'package:four_habits_client/styles.dart';
 
 import 'create_habit_logic.dart';
 
@@ -45,7 +46,8 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
               const SizedBox(height: 16),
               const Text(
                 'Habit Name',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: Style.cardTextSize, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 2),
               TextFormField(
@@ -76,7 +78,8 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
               const SizedBox(height: 8),
               const Text(
                 'Occurrence',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: Style.cardTextSize, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 2),
               DropdownButtonFormField<String>(
@@ -151,10 +154,10 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                         },
                         child: CustomCard(
                             icon: Icons.save,
-                            iconColor: Colors.orange,
-                            cardColor: Colors.orange[100],
+                            iconColor: Style.orange,
+                            cardColor: Style.cardColorOrange,
                             cardText: 'Save Habit',
-                            cardTextColor: Colors.orange),
+                            cardTextColor: Style.orange),
                       ),
                       const SizedBox(height: 30), // Adjust the height as needed
                     ],
