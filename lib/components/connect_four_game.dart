@@ -80,9 +80,6 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
         // Save locally
         pref.updateChallenge(widget.challenge);
 
-        // Post to server — OUTSIDE setState
-        await WebSocketClient.post(widget.challenge.toJson());
-
         // Now update the UI
         setState(() {
           if (_checkWin(row, column)) {
@@ -95,6 +92,11 @@ class _ConnectFourGameState extends State<ConnectFourGame> {
 
           widget.onMoveMade?.call();
         });
+
+        // Prevent multiplay -> post after all changes are done
+        // Post to server — OUTSIDE setState
+        await WebSocketClient.post(widget.challenge.toJson());
+
         break;
       }
     }
