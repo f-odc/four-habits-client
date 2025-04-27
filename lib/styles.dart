@@ -6,7 +6,7 @@ class Style {
   static const Color secondaryColor = Colors.orangeAccent;
   static const Color textColor = Colors.orange;
   static Color cardColorOrange = Colors.orange[100]!;
-  static const Color dividerColor = Colors.grey;
+  static const Color grey = Colors.grey;
   // TODO: change card text size
   static const double cardTextSize = 18;
   static const double cardSubTextSize = 14;

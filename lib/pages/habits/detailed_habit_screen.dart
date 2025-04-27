@@ -259,20 +259,25 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                     // SHARE HABIT
                     // TODO: Make CustomCard clickable
                     Card(
-                      color: Style.cardColorOrange,
+                      color: _challenge != null ? null : Style.cardColorOrange,
                       child: ListTile(
                         leading: const Icon(Icons.share, color: Colors.orange),
-                        title: const Text(
-                          'Challenge Your Friends!',
+                        title: Text(
+                          _challenge != null
+                              ? 'Challenge Already Running!'
+                              : 'Challenge Your Friends!',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Style.orange,
                             fontSize: Style.cardTextSize,
                           ),
                         ),
-                        onTap: () {
-                          _habitLogic.shareHabit(widget.habit);
-                        },
+                        // include onTap only if challenge == null
+                        onTap: _challenge != null
+                            ? null
+                            : () {
+                                _habitLogic.shareHabit(widget.habit);
+                              },
                       ),
                     ),
                   ],
