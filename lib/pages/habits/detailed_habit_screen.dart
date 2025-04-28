@@ -246,9 +246,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                     CustomCard(
                       icon: Icons.local_fire_department_outlined,
                       iconColor: null,
-                      cardColor: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerLow, // TODO: create color file
+                      cardColor: Style.getBackgroundColor(context),
                       cardText: 'Highest Streak:',
                       cardTextColor: null,
                       trailingIcon: Icons.local_fire_department,

@@ -11,6 +11,10 @@ class Style {
   static const double cardTextSize = 18;
   static const double cardSubTextSize = 14;
 
+  static Color getBackgroundColor(BuildContext context) {
+    return Theme.of(context).colorScheme.surfaceContainerLow;
+  }
+
   // Text Styles
   static const TextStyle titleTextStyle = TextStyle(
     fontSize: 25,
