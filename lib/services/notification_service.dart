@@ -7,26 +7,45 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   final pref = SharedPreferencesService();
 
-  // IOS was deleted
   NotificationService() {
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
-    var initializationSettingsAndroid =
+    final initializationSettingsAndroid =
         const AndroidInitializationSettings('ic_notification');
-    var initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+    final initializationSettingsIOS =
+        const DarwinInitializationSettings(); // updated name in newer versions
+
+    final initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-    // request permissions
+    // Create notification channels
+    _createNotificationChannels();
+
+    // Request notification permissions (for Android 13+)
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
   }
 
-  Future<void> showNotification() async {
+  Future<void> _createNotificationChannels() async {
+    const AndroidNotificationChannel dailyChannel = AndroidNotificationChannel(
+      'daily_notification_channel_id',
+      'Daily Notifications',
+      description: 'Channel for daily notifications',
+      importance: Importance.max,
+    );
+
+    final androidPlugin =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    await androidPlugin?.createNotificationChannel(dailyChannel);
+  }
+
+  /*Future<void> showNotification() async {
     print("Showing notification");
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
         '0', 'Connect 4',
@@ -40,7 +59,7 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.show(
         0, 'Connect 4', 'A move was performed', platformChannelSpecifics,
         payload: 'item x');
-  }
+  }*/
 
   Future<void> scheduleDailyNotification() async {
     final (_, notificationTime) = pref.getNotificationSettings();
@@ -79,7 +98,7 @@ class NotificationService {
     return scheduledDate;
   }
 
-  Future<void> periodicNotification() async {
+  /*Future<void> periodicNotification() async {
     print("Scheduling periodic notification");
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
         '1', 'Connect 8',
@@ -97,7 +116,7 @@ class NotificationService {
         platformChannelSpecifics,
         payload: 'item x',
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle);
-  }
+  }*/
 
   Future<void> stopNotification() async {
     await flutterLocalNotificationsPlugin
