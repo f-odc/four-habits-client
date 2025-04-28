@@ -112,7 +112,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                   child: TextFormField(
                     controller: _occurrenceController,
                     decoration: InputDecoration(
-                      labelText: 'Please Enter a Number',
+                      labelText: 'Frequency',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
