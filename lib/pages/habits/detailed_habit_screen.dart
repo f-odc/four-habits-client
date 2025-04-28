@@ -237,6 +237,8 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                   occurrenceType: widget.habit.occurrenceType,
                   occurrenceNum: _occurrenceController.text,
                   streak: widget.habit.getStreak(),
+                  currentCompletedTimes:
+                      widget.habit.getCompletedCurrentEpoch(),
                 ),
                 const SizedBox(height: 4),
                 // HABIT OPTIONS

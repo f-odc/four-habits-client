@@ -56,6 +56,30 @@ class Habit {
     getStreak(); // update the highest streak
   }
 
+  int getCompletedCurrentEpoch() {
+    DateTime now = DateTime.now();
+    if (occurrenceType == 'Weekly') {
+      // get the start and end of the current week (from Monday to Sunday)
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+      DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+
+      int completedInFirstWeek =
+          _calculateHowManyDatesInRange(startOfWeek, endOfWeek);
+      print("Completed in week: $completedInFirstWeek");
+      return completedInFirstWeek;
+    } else if (occurrenceType == 'Monthly') {
+      // get the start and end of the current month (from 1st to last day)
+      DateTime startOfMonth = DateTime(now.year, now.month, 1);
+      DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
+
+      int completedInFirstWeek =
+          _calculateHowManyDatesInRange(startOfMonth, endOfMonth);
+      print("Completed in month: $completedInFirstWeek");
+      return completedInFirstWeek;
+    }
+    return 0;
+  }
+
   int getStreak() {
     int streak = 0;
     DateTime now = DateTime.now();

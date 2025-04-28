@@ -37,6 +37,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                 habitName: _habitName,
                 occurrenceType: _occurrenceType ?? '',
                 occurrenceNum: _occurrenceController.text,
+                currentCompletedTimes: 0,
                 streak: 0,
               ),
               const SizedBox(height: 16),

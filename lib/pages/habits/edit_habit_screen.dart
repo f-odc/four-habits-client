@@ -56,6 +56,7 @@ class _EditHabitScreen extends State<EditHabitScreen> {
                 occurrenceType: widget.habit.occurrenceType,
                 occurrenceNum: _occurrenceController.text,
                 streak: widget.habit.getStreak(),
+                currentCompletedTimes: widget.habit.getCompletedCurrentEpoch(),
               ),
               const SizedBox(height: 16),
               const CustomDivider(height: 1),

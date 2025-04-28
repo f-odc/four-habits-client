@@ -6,6 +6,7 @@ class HabitTile extends StatelessWidget {
   final String occurrenceType;
   final String occurrenceNum;
   final int streak;
+  final int currentCompletedTimes;
   final bool highlight;
 
   const HabitTile({
@@ -13,6 +14,7 @@ class HabitTile extends StatelessWidget {
     required this.habitName,
     required this.occurrenceType,
     required this.occurrenceNum,
+    required this.currentCompletedTimes,
     required this.streak,
     this.highlight = false,
   }) : super(key: key);
@@ -35,7 +37,9 @@ class HabitTile extends StatelessWidget {
         subtitle: Text(
           occurrenceType == 'Daily'
               ? 'Occurrence: $occurrenceType'
-              : 'Occurrence: $occurrenceType - $occurrenceNum',
+              : occurrenceType == 'Weekly' || occurrenceType == 'Monthly'
+                  ? 'Occurrence: $occurrenceType $currentCompletedTimes/$occurrenceNum'
+                  : 'Occurrence:',
           style: TextStyle(
             fontSize: Style.cardSubTextSize,
             color: Colors.grey[600],

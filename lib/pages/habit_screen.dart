@@ -290,6 +290,7 @@ class _HabitScreenState extends State<HabitScreen> {
                       occurrenceType: habit.occurrenceType,
                       occurrenceNum: habit.occurrenceNum,
                       streak: habit.getStreak(),
+                      currentCompletedTimes: habit.getCompletedCurrentEpoch(),
                       highlight: !isCompletedToday(habit),
                     ),
                   ),
