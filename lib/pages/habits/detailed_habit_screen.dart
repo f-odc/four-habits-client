@@ -232,7 +232,6 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
             Text(
               'If your habit is completed (see "When does the current streak increase?"), you can make a move in the Connect Four game. If you completed your habit successfully but it is not your turn because your opponent has not played yet, you have to wait till 20:00 to make a move, so the opponent gets the chance to catch up.',
             ),
-            // Second Section
             SizedBox(height: 12),
           ],
         ),
