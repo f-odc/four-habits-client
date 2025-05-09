@@ -119,6 +119,65 @@ class _HabitScreenState extends State<HabitScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
+            // INFO POPUP
+            icon: Icon(
+              Icons.info_outline,
+              color: Style.orange,
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Custom Title
+                      Text(
+                        'Page Info',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Style.orange,
+                        ),
+                      ),
+                      Divider(thickness: 1),
+                      SizedBox(height: 8),
+                      // First Section
+                      Text(
+                        'Join a Challenge',
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Click on the button "Join Challenge" and paste the ID you received from your friend to join the habit challenge.',
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      child: const Text(
+                        'Close',
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          IconButton(
+            // NOTIFICATION SETTINGS
             icon: Icon(
                 _notificationEnabled
                     ? Icons.notifications

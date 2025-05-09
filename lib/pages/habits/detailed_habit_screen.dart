@@ -174,6 +174,86 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
     );
   }
 
+  void _showInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Custom Title
+            Text(
+              'Page Info',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Style.orange,
+              ),
+            ),
+            Divider(thickness: 1),
+            SizedBox(height: 8),
+            // First Section
+            Text(
+              'When does the current streak increase?',
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Your streak increases when you complete your habit the required number of times within the set timeframe. For example, if your habit is to be completed twice a week, your streak will only grow if you achieve this goal within the week.',
+            ),
+            SizedBox(height: 12),
+            Text(
+              'How to challenge someone?',
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Click on the "Challenge Your Friends!" button and share the given ID with your friends. With this ID they can join your Challenge by clicking on the "Join Challenge" button in the main menu',
+            ),
+            SizedBox(height: 12),
+            Text(
+              'When can make a move in the Connect Four game?',
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'If your habit is completed (see "When does the current streak increase?"), you can make a move in the Connect Four game. If you completed your habit successfully but it is not your turn because your opponent has not played yet, you have to wait till 20:00 to make a move, so the opponent gets the chance to catch up.',
+            ),
+            // Second Section
+            SizedBox(height: 12),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: const Text(
+              'Close',
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -196,6 +276,15 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
               elevation: 0, // Add a small shadow
               actions: [
                 IconButton(
+                  // INFO POPUP
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Style.orange,
+                  ),
+                  onPressed: () => _showInfoDialog(context),
+                ),
+                IconButton(
+                  // EDIT
                   icon: const Icon(Icons.edit),
                   color: Colors.orange,
                   onPressed: () {
@@ -211,6 +300,7 @@ class _DetailedHabitScreenState extends State<DetailedHabitScreen> {
                   },
                 ),
                 IconButton(
+                  // DELETE
                   icon: const Icon(Icons.delete),
                   color: Colors.orange,
                   onPressed: () {
